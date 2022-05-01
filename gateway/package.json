@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "local:dev": "ts-node-dev --respawn --transpile-only src/application/app.ts",
+    "local:start": "ts-node-dev --respawn --transpile-only src/application/index.ts",
     "lint": "eslint 'src/**' --quiet",
     "lint:fix": "eslint 'src/**' --quiet --fix"
   },
@@ -24,5 +24,8 @@
     "git-commit-msg-linter": "^4.1.2",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "fastify": "^3.29.0"
   }
 }
