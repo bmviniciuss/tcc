@@ -1,8 +1,11 @@
 import fastify from 'fastify'
 
-const app = fastify({ logger: true })
+import logger from '../utils/logger'
 
-app.get('/health', async (req, res) => {
+const app = fastify({ logger: false })
+
+app.get('/health', async () => {
+  logger.info('GET /health was called')
   return { alive: true }
 })
 
