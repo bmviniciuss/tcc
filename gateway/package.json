@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "local:dev": "ts-node-dev --respawn --transpile-only src/application/app.ts"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.4"
+  }
 }
