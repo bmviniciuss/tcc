@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 
+import paymentsRoutes from '../../http/handlers/payments'
 import logger from '../../utils/logger'
-import transactionsRoutes from './transactions'
 
 export default async function routes (fastify: FastifyInstance) {
   fastify.get('/health', async () => {
@@ -9,5 +9,5 @@ export default async function routes (fastify: FastifyInstance) {
     return { alive: true }
   })
 
-  fastify.register(transactionsRoutes, { prefix: 'transactions' })
+  fastify.register(paymentsRoutes, { prefix: 'payments' })
 }
