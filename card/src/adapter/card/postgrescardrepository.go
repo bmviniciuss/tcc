@@ -2,6 +2,7 @@ package postgrescardrepository
 
 import (
 	"github.com/bmviniciuss/tcc/card/src/core/card"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +21,11 @@ type PostgresCard struct {
 
 func (PostgresCard) TableName() string {
 	return "cards"
+}
+
+func (pgCard *PostgresCard) BeforeCreate(tx *gorm.DB) (err error) {
+	pgCard.Id = uuid.NewString()
+	return
 }
 
 type postgresCardRepository struct {
