@@ -1,7 +1,6 @@
 package card
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -63,11 +62,6 @@ func NewCardService(cardDetailsGenerator carddetails.GeneratorService, encrypter
 	}
 }
 
-func prettyPrint(i interface{}) string {
-	s, _ := json.MarshalIndent(i, "", "\t")
-	return string(s)
-}
-
 func maskPANNumber(pan string) string {
 	return pan[:4] + strings.Repeat("*", len(pan)-8) + pan[len(pan)-4:]
 }
@@ -111,7 +105,6 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Cartão gerado: ", prettyPrint(card), cardDetails.Number)
 
 	if err != nil {
 		return nil, err

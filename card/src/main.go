@@ -2,13 +2,11 @@ package main
 
 import (
 	"log"
-	"os"
+
+	"github.com/gin-gonic/gin"
 
 	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
-	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
-	"github.com/bmviniciuss/tcc/card/src/core/card"
-	carddetails "github.com/bmviniciuss/tcc/card/src/core/cardDetails"
-	"github.com/bmviniciuss/tcc/card/src/core/encrypter"
+	cardshandler "github.com/bmviniciuss/tcc/card/src/http/handlers/cards"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -32,16 +30,10 @@ func main() {
 		log.Fatal("Error auto migrating", err)
 	}
 
-	cardRepository := postgrescardrepository.NewPostgresCardRepository(db)
+	r := gin.Default()
 
-	encrypter := encrypter.NewEncrypter([]byte(os.Getenv("ENCRYPTION_KEY")))
-	cardDetailsGenerator := carddetailsgenerator.NewCardDetailsGenerator()
-	cardDetailsGeneratorService := carddetails.NewCardDetailsGeneratorService(cardDetailsGenerator)
-	cardService := card.NewCardService(cardDetailsGeneratorService, encrypter, cardRepository)
+	cr := cardshandler.NewHandler(db)
+	cr.RegisterRoutes(r)
 
-	cardService.Generate(&card.GenerateCardServiceInput{
-		CardholderName: "Vinicius",
-		IsCredit:       true,
-		IsDebit:        true,
-	})
+	r.Run(":3000")
 }
