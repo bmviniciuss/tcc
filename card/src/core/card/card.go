@@ -1,7 +1,6 @@
 package card
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -67,7 +66,6 @@ func maskPANNumber(pan string) string {
 }
 
 func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInput) (*Card, error) {
-	fmt.Println("Iniciando geração de cartão")
 	EXPIRATION_STEP_YEARS := 5 // in years
 	cardDetails, err := s.cardDetailsGenerator.Generate()
 

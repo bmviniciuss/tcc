@@ -1,6 +1,8 @@
 package postgrescardrepository
 
 import (
+	"fmt"
+
 	"github.com/bmviniciuss/tcc/card/src/core/card"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -49,6 +51,8 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 		IsCredit:       generateCardDTO.IsCredit,
 		IsDebit:        generateCardDTO.IsDebit,
 	}
+
+	fmt.Println("pg: ", pgCard.IsCredit, pgCard.IsDebit)
 
 	result := r.db.Create(pgCard)
 
