@@ -16,9 +16,9 @@ type PostgresCard struct {
 	CardholderName string `gorm:"type:varchar(256);not null"`
 	Token          string `gorm:"type:varchar(256);not null"`
 	MaskedNumber   string `gorm:"type:varchar(16);not null"`
-	Active         bool   `gorm:"type:boolean;default:true"`
-	IsCredit       bool   `gorm:"type:boolean;default:true"`
-	IsDebit        bool   `gorm:"type:boolean;default:true"`
+	Active         *bool  `gorm:"type:boolean;default:true"`
+	IsCredit       *bool  `gorm:"type:boolean;default:true"`
+	IsDebit        *bool  `gorm:"type:boolean;default:true"`
 }
 
 func (PostgresCard) TableName() string {
@@ -47,9 +47,9 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 		CardholderName: generateCardDTO.CardholderName,
 		Token:          generateCardDTO.Token,
 		MaskedNumber:   generateCardDTO.MaskedNumber,
-		Active:         generateCardDTO.Active,
-		IsCredit:       generateCardDTO.IsCredit,
-		IsDebit:        generateCardDTO.IsDebit,
+		Active:         &generateCardDTO.Active,
+		IsCredit:       &generateCardDTO.IsCredit,
+		IsDebit:        &generateCardDTO.IsDebit,
 	}
 
 	fmt.Println("pg: ", pgCard.IsCredit, pgCard.IsDebit)
@@ -67,8 +67,8 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 		CardholderName: pgCard.CardholderName,
 		Token:          pgCard.Token,
 		MaskedNumber:   pgCard.MaskedNumber,
-		Active:         pgCard.Active,
-		IsCredit:       pgCard.IsCredit,
-		IsDebit:        pgCard.IsDebit,
+		Active:         *pgCard.Active,
+		IsCredit:       *pgCard.IsCredit,
+		IsDebit:        *pgCard.IsDebit,
 	}, nil
 }

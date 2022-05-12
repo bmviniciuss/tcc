@@ -10,8 +10,8 @@ import (
 
 type Card struct {
 	Id             string
-	Number         string
-	Cvv            string
+	Number         string `json:"-"`
+	Cvv            string `json:"-"`
 	CardholderName string
 	Token          string
 	MaskedNumber   string
@@ -82,7 +82,6 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 		Number:           cardDetails.Number,
 		Cvv:              cardDetails.Cvv,
 		CardholderName:   generateCardServiceInput.CardholderName,
-		Token:            "4247284792",
 		MaskedNumber:     MaskedNumber,
 		Active:           true,
 		ExpirationYear:   year,

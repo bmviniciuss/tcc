@@ -6,9 +6,10 @@ import (
 	"github.com/bmviniciuss/tcc/card/src/http/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"gorm.io/gorm"
 )
 
-func NewMux() *chi.Mux {
+func NewApi(db *gorm.DB) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -19,7 +20,7 @@ func NewMux() *chi.Mux {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/cards", func(r chi.Router) {
-			handlers.NewCardsController().Route(r)
+			handlers.NewCardsController(db).Route(r)
 		})
 	})
 

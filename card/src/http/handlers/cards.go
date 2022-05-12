@@ -6,19 +6,27 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/asaskevich/govalidator"
+	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
+	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
+	"github.com/bmviniciuss/tcc/card/src/core/card"
+	"github.com/bmviniciuss/tcc/card/src/core/encrypter"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
 
 type CardsController struct {
+	Db *gorm.DB
 }
 
-func NewCardsController() CardsController {
-	return CardsController{}
+func NewCardsController(db *gorm.DB) CardsController {
+	return CardsController{
+		Db: db,
+	}
 }
 
 func (c CardsController) Route(r chi.Router) {
-	r.Post("/", handleCreateCard())
+	r.Post("/", handleCreateCard(c.Db))
 }
 
 type PresentationCard struct {
@@ -33,13 +41,15 @@ type PresentationCard struct {
 }
 
 type CreateCardRequest struct {
-	CardholderName string `json:"cardholder_name" valid:"required, notnull"`
-	IsCredit       *bool  `json:"is_credit"`
-	IsDebit        *bool  `json:"is_debit" valid:"required, notnull, type(bool)"`
+	CardholderName string `json:"cardholder_name" validate:"required"`
+	IsCredit       *bool  `json:"is_credit" validate:"required"`
+	IsDebit        *bool  `json:"is_debit" valid:"required"`
 }
 
-func handleCreateCard() func(rw http.ResponseWriter, r *http.Request) {
+func handleCreateCard(db *gorm.DB) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
+		validate := validator.New()
+
 		rw.Header().Set("Content-Type", "application/json")
 
 		log.Println("Calling POST /cards")
@@ -52,7 +62,24 @@ func handleCreateCard() func(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err := govalidator.ValidateStruct(createCardRequest)
+		err := validate.Struct(createCardRequest)
+
+		if err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+
+		cardRepository := postgrescardrepository.NewPostgresCardRepository(db)
+		encrypter := encrypter.NewEncrypter([]byte("gFvJR96@UXYrq_2m"))
+		cardDetailsGenerator := carddetailsgenerator.NewCardDetailsGenerator()
+		cardService := card.NewCardService(cardDetailsGenerator, encrypter, cardRepository)
+
+		card, err := cardService.Generate(&card.GenerateCardServiceInput{
+			CardholderName: createCardRequest.CardholderName,
+			IsCredit:       *createCardRequest.IsCredit,
+			IsDebit:        *createCardRequest.IsDebit,
+		})
 
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
@@ -61,6 +88,6 @@ func handleCreateCard() func(rw http.ResponseWriter, r *http.Request) {
 		}
 
 		rw.WriteHeader(http.StatusOK)
-		json.NewEncoder(rw).Encode(createCardRequest)
+		json.NewEncoder(rw).Encode(card)
 	}
 }
