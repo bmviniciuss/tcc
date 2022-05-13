@@ -2,45 +2,40 @@ package postgrescardrepository
 
 import (
 	"github.com/bmviniciuss/tcc/card/src/core/card"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"github.com/jmoiron/sqlx"
 )
 
 type PostgresCard struct {
-	gorm.Model
-	Id              string `gorm:"primaryKey"`
-	Number          string `gorm:"type:varchar(16);not null"`
-	Cvv             string `gorm:"type:varchar(3);not null"`
-	CardholderName  string `gorm:"type:varchar(256);not null"`
-	Token           string `gorm:"type:varchar(256);not null"`
-	MaskedNumber    string `gorm:"type:varchar(16);not null"`
-	ExpirationYear  int    `gorm:"type:integer;not null"`
-	ExpirationMonth int    `gorm:"type:integer;not null"`
-	Active          *bool  `gorm:"type:boolean;default:true"`
-	IsCredit        *bool  `gorm:"type:boolean;default:true"`
-	IsDebit         *bool  `gorm:"type:boolean;default:true"`
+	Id              string
+	Number          string `db:"pan"`
+	MaskedNumber    string `db:"masked_pan"`
+	Cvv             string
+	CardholderName  string `db:"cardholder_name"`
+	Token           string
+	ExpirationYear  int
+	ExpirationMonth int
+	Active          *bool
+	IsCredit        *bool
+	IsDebit         *bool
 }
 
 func (PostgresCard) TableName() string {
 	return "cards"
 }
 
-func (pgCard *PostgresCard) BeforeCreate(tx *gorm.DB) (err error) {
-	pgCard.Id = uuid.NewString()
-	return
-}
-
 type postgresCardRepository struct {
-	db gorm.DB
+	Db sqlx.DB
 }
 
-func NewPostgresCardRepository(db *gorm.DB) *postgresCardRepository {
+func NewPostgresCardRepository(db *sqlx.DB) *postgresCardRepository {
 	return &postgresCardRepository{
-		db: *db,
+		Db: *db,
 	}
 }
 
 func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepoInput) (*card.Card, error) {
+	var id string
+
 	pgCard := &PostgresCard{
 		Number:          generateCardDTO.Number,
 		Cvv:             generateCardDTO.Cvv,
@@ -54,14 +49,15 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 		IsDebit:         &generateCardDTO.IsDebit,
 	}
 
-	result := r.db.Create(pgCard)
+	insertSQL := "INSERT INTO public.cards (id, pan, masked_pan, cvv, cardholder_name, \"token\", expiration_year, expiration_month, active, is_debit, is_credit) VALUES(uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
+	err := r.Db.QueryRow(insertSQL, pgCard.Number, pgCard.MaskedNumber, pgCard.Cvv, pgCard.CardholderName, pgCard.Token, pgCard.ExpirationYear, pgCard.ExpirationMonth, pgCard.Active, pgCard.IsDebit, pgCard.IsCredit).Scan(&id)
 
-	if result.Error != nil {
-		return nil, result.Error
+	if err != nil {
+		return nil, err
 	}
 
 	return &card.Card{
-		Id:              pgCard.Id,
+		Id:              id,
 		Number:          pgCard.Number,
 		Cvv:             pgCard.Cvv,
 		CardholderName:  pgCard.CardholderName,

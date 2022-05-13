@@ -10,10 +10,10 @@ import (
 	"github.com/bmviniciuss/tcc/card/src/http/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"gorm.io/gorm"
+	"github.com/jmoiron/sqlx"
 )
 
-func newCardService(db *gorm.DB) *card.CardService {
+func newCardService(db *sqlx.DB) *card.CardService {
 	cardRepository := postgrescardrepository.NewPostgresCardRepository(db)
 	encrypter := encrypter.NewEncrypter([]byte("gFvJR96@UXYrq_2m"))
 	cardDetailsGenerator := carddetailsgenerator.NewCardDetailsGenerator()
@@ -21,7 +21,7 @@ func newCardService(db *gorm.DB) *card.CardService {
 	return cardService
 }
 
-func NewApi(db *gorm.DB) *chi.Mux {
+func NewApi(db *sqlx.DB) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)

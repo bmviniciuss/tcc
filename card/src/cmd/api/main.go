@@ -5,11 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
+	"github.com/bmviniciuss/tcc/card/src/adapter/db"
 	api "github.com/bmviniciuss/tcc/card/src/http"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -20,15 +18,8 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	dsn := "host=localhost user=root password=root dbname=cards-ms port=5432"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	db.AutoMigrate(&postgrescardrepository.PostgresCard{})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Connected to database")
+	// dsn := "host=localhost user=root password=root dbname=cards-ms port=5432"
+	db := db.ConnectDB()
 
 	appPort := os.Getenv("PORT")
 	mux := api.NewApi(db)
