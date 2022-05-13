@@ -3,11 +3,23 @@ package api
 import (
 	"time"
 
+	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
+	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
+	"github.com/bmviniciuss/tcc/card/src/core/card"
+	"github.com/bmviniciuss/tcc/card/src/core/encrypter"
 	"github.com/bmviniciuss/tcc/card/src/http/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"gorm.io/gorm"
 )
+
+func newCardService(db *gorm.DB) *card.CardService {
+	cardRepository := postgrescardrepository.NewPostgresCardRepository(db)
+	encrypter := encrypter.NewEncrypter([]byte("gFvJR96@UXYrq_2m"))
+	cardDetailsGenerator := carddetailsgenerator.NewCardDetailsGenerator()
+	cardService := card.NewCardService(cardDetailsGenerator, encrypter, cardRepository)
+	return cardService
+}
 
 func NewApi(db *gorm.DB) *chi.Mux {
 	r := chi.NewRouter()
@@ -20,7 +32,7 @@ func NewApi(db *gorm.DB) *chi.Mux {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/cards", func(r chi.Router) {
-			handlers.NewCardsController(db).Route(r)
+			handlers.NewCardsController(newCardService(db)).Route(r)
 		})
 	})
 
