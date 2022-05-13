@@ -25,14 +25,15 @@ func (c CardsController) Route(r chi.Router) {
 }
 
 type PresentationCard struct {
-	Id             string `json:"id"`
-	Cvv            string `json:"cvv"`
-	CardholderName string `json:"cardholder_name"`
-	Token          string `json:"token"`
-	MaskedNumber   string `json:"masked_number"`
-	Active         bool   `json:"active"`
-	IsCredit       bool   `json:"is_credit"`
-	IsDebit        bool   `json:"is_debit"`
+	Id              string `json:"id"`
+	CardholderName  string `json:"cardholder_name"`
+	Token           string `json:"token"`
+	MaskedNumber    string `json:"masked_number"`
+	ExpirationYear  int    `json:"expiration_year"`
+	ExpirationMonth int    `json:"expiration_month"`
+	Active          bool   `json:"active"`
+	IsCredit        bool   `json:"is_credit"`
+	IsDebit         bool   `json:"is_debit"`
 }
 
 type CreateCardRequest struct {
@@ -74,7 +75,18 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 			return
 		}
 
+		presentationCard := PresentationCard{
+			Id:              card.Id,
+			CardholderName:  card.CardholderName,
+			Token:           card.Token,
+			MaskedNumber:    card.MaskedNumber,
+			ExpirationYear:  card.ExpirationYear,
+			ExpirationMonth: card.ExpirationMonth,
+			Active:          card.Active,
+			IsCredit:        card.IsCredit,
+			IsDebit:         card.IsDebit,
+		}
 		rw.WriteHeader(http.StatusOK)
-		json.NewEncoder(rw).Encode(card)
+		json.NewEncoder(rw).Encode(presentationCard)
 	}
 }

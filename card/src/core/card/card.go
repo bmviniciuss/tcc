@@ -9,15 +9,17 @@ import (
 )
 
 type Card struct {
-	Id             string
-	Number         string `json:"-"`
-	Cvv            string `json:"-"`
-	CardholderName string
-	Token          string
-	MaskedNumber   string
-	Active         bool
-	IsCredit       bool
-	IsDebit        bool
+	Id              string
+	Number          string `json:"-"`
+	Cvv             string `json:"-"`
+	CardholderName  string
+	Token           string
+	MaskedNumber    string
+	ExpirationYear  int
+	ExpirationMonth int
+	Active          bool
+	IsCredit        bool
+	IsDebit         bool
 }
 
 type GenerateCardServiceInput struct {
@@ -31,16 +33,16 @@ type Service interface {
 }
 
 type GenerateCardRepoInput struct {
-	Number           string
-	Cvv              string
-	CardholderName   string
-	Token            string
-	MaskedNumber     string
-	ExpirationYear   int
-	ExpirantionMonth int
-	Active           bool
-	IsCredit         bool
-	IsDebit          bool
+	Number          string
+	Cvv             string
+	CardholderName  string
+	Token           string
+	MaskedNumber    string
+	ExpirationYear  int
+	ExpirationMonth int
+	Active          bool
+	IsCredit        bool
+	IsDebit         bool
 }
 
 type CardRepository interface {
@@ -79,15 +81,15 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 	month := now.Month()
 
 	generateCardInput := &GenerateCardRepoInput{
-		Number:           cardDetails.Number,
-		Cvv:              cardDetails.Cvv,
-		CardholderName:   generateCardServiceInput.CardholderName,
-		MaskedNumber:     MaskedNumber,
-		Active:           true,
-		ExpirationYear:   year,
-		ExpirantionMonth: int(month),
-		IsCredit:         generateCardServiceInput.IsCredit,
-		IsDebit:          generateCardServiceInput.IsDebit,
+		Number:          cardDetails.Number,
+		Cvv:             cardDetails.Cvv,
+		CardholderName:  generateCardServiceInput.CardholderName,
+		MaskedNumber:    MaskedNumber,
+		Active:          true,
+		ExpirationYear:  year,
+		ExpirationMonth: int(month),
+		IsCredit:        generateCardServiceInput.IsCredit,
+		IsDebit:         generateCardServiceInput.IsDebit,
 	}
 
 	enctypedCardNumber, err := s.encrypter.Encrypt([]byte(cardDetails.Number))

@@ -1,8 +1,6 @@
 package postgrescardrepository
 
 import (
-	"fmt"
-
 	"github.com/bmviniciuss/tcc/card/src/core/card"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -10,15 +8,17 @@ import (
 
 type PostgresCard struct {
 	gorm.Model
-	Id             string `gorm:"primaryKey"`
-	Number         string `gorm:"type:varchar(16);not null"`
-	Cvv            string `gorm:"type:varchar(3);not null"`
-	CardholderName string `gorm:"type:varchar(256);not null"`
-	Token          string `gorm:"type:varchar(256);not null"`
-	MaskedNumber   string `gorm:"type:varchar(16);not null"`
-	Active         *bool  `gorm:"type:boolean;default:true"`
-	IsCredit       *bool  `gorm:"type:boolean;default:true"`
-	IsDebit        *bool  `gorm:"type:boolean;default:true"`
+	Id              string `gorm:"primaryKey"`
+	Number          string `gorm:"type:varchar(16);not null"`
+	Cvv             string `gorm:"type:varchar(3);not null"`
+	CardholderName  string `gorm:"type:varchar(256);not null"`
+	Token           string `gorm:"type:varchar(256);not null"`
+	MaskedNumber    string `gorm:"type:varchar(16);not null"`
+	ExpirationYear  int    `gorm:"type:integer;not null"`
+	ExpirationMonth int    `gorm:"type:integer;not null"`
+	Active          *bool  `gorm:"type:boolean;default:true"`
+	IsCredit        *bool  `gorm:"type:boolean;default:true"`
+	IsDebit         *bool  `gorm:"type:boolean;default:true"`
 }
 
 func (PostgresCard) TableName() string {
@@ -42,17 +42,17 @@ func NewPostgresCardRepository(db *gorm.DB) *postgresCardRepository {
 
 func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepoInput) (*card.Card, error) {
 	pgCard := &PostgresCard{
-		Number:         generateCardDTO.Number,
-		Cvv:            generateCardDTO.Cvv,
-		CardholderName: generateCardDTO.CardholderName,
-		Token:          generateCardDTO.Token,
-		MaskedNumber:   generateCardDTO.MaskedNumber,
-		Active:         &generateCardDTO.Active,
-		IsCredit:       &generateCardDTO.IsCredit,
-		IsDebit:        &generateCardDTO.IsDebit,
+		Number:          generateCardDTO.Number,
+		Cvv:             generateCardDTO.Cvv,
+		CardholderName:  generateCardDTO.CardholderName,
+		Token:           generateCardDTO.Token,
+		MaskedNumber:    generateCardDTO.MaskedNumber,
+		ExpirationYear:  generateCardDTO.ExpirationYear,
+		ExpirationMonth: generateCardDTO.ExpirationMonth,
+		Active:          &generateCardDTO.Active,
+		IsCredit:        &generateCardDTO.IsCredit,
+		IsDebit:         &generateCardDTO.IsDebit,
 	}
-
-	fmt.Println("pg: ", pgCard.IsCredit, pgCard.IsDebit)
 
 	result := r.db.Create(pgCard)
 
@@ -61,14 +61,16 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 	}
 
 	return &card.Card{
-		Id:             pgCard.Id,
-		Number:         pgCard.Number,
-		Cvv:            pgCard.Cvv,
-		CardholderName: pgCard.CardholderName,
-		Token:          pgCard.Token,
-		MaskedNumber:   pgCard.MaskedNumber,
-		Active:         *pgCard.Active,
-		IsCredit:       *pgCard.IsCredit,
-		IsDebit:        *pgCard.IsDebit,
+		Id:              pgCard.Id,
+		Number:          pgCard.Number,
+		Cvv:             pgCard.Cvv,
+		CardholderName:  pgCard.CardholderName,
+		Token:           pgCard.Token,
+		MaskedNumber:    pgCard.MaskedNumber,
+		ExpirationYear:  pgCard.ExpirationYear,
+		ExpirationMonth: pgCard.ExpirationMonth,
+		Active:          *pgCard.Active,
+		IsCredit:        *pgCard.IsCredit,
+		IsDebit:         *pgCard.IsDebit,
 	}, nil
 }
