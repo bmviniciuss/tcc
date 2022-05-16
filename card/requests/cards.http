@@ -1,0 +1,16 @@
+@hostname = http://localhost
+@port = 3333
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+
+###
+
+# Generate Card
+POST {{host}}/api/cards
+Content-Type: application/json
+
+{
+    "cardholder_name": "John Doe",
+    "is_credit": true,
+    "is_debit": true
+}
