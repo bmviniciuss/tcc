@@ -67,18 +67,23 @@ func maskPANNumber(pan string) string {
 	return pan[:4] + strings.Repeat("*", len(pan)-8) + pan[len(pan)-4:]
 }
 
-func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInput) (*Card, error) {
+func getCardExpiration() (int, int) {
 	EXPIRATION_STEP_YEARS := 5 // in years
+	now := time.Now()
+	year := now.Year() + EXPIRATION_STEP_YEARS
+	month := int(now.Month())
+	return year, month
+}
+
+func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInput) (*Card, error) {
 	cardDetails, err := s.cardDetailsGenerator.Generate()
 
 	if err != nil {
 		return nil, err
 	}
 
+	year, month := getCardExpiration()
 	MaskedNumber := maskPANNumber(cardDetails.Number)
-	now := time.Now()
-	year := now.Year() + EXPIRATION_STEP_YEARS
-	month := now.Month()
 
 	generateCardInput := &GenerateCardRepoInput{
 		Number:          cardDetails.Number,
@@ -87,7 +92,7 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 		MaskedNumber:    MaskedNumber,
 		Active:          true,
 		ExpirationYear:  year,
-		ExpirationMonth: int(month),
+		ExpirationMonth: month,
 		IsCredit:        generateCardServiceInput.IsCredit,
 		IsDebit:         generateCardServiceInput.IsDebit,
 	}
@@ -101,9 +106,6 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 	generateCardInput.Token = string(enctypedCardNumber)
 
 	card, err := s.cardRepository.Generate(generateCardInput)
-	if err != nil {
-		return nil, err
-	}
 
 	if err != nil {
 		return nil, err
