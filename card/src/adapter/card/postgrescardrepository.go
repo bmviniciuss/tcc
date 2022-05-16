@@ -70,3 +70,27 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 		IsDebit:         *pgCard.IsDebit,
 	}, nil
 }
+
+func (r *postgresCardRepository) GetByPan(pan string) (*card.Card, error) {
+	var pgCard PostgresCard
+
+	err := r.Db.Get(&pgCard, "SELECT * FROM public.cards c WHERE c.pan = $1", pan)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &card.Card{
+		Id:              pgCard.Id,
+		Number:          pgCard.Number,
+		Cvv:             pgCard.Cvv,
+		CardholderName:  pgCard.CardholderName,
+		Token:           pgCard.Token,
+		MaskedNumber:    pgCard.MaskedNumber,
+		ExpirationYear:  pgCard.ExpirationYear,
+		ExpirationMonth: pgCard.ExpirationMonth,
+		Active:          *pgCard.Active,
+		IsCredit:        *pgCard.IsCredit,
+		IsDebit:         *pgCard.IsDebit,
+	}, nil
+}

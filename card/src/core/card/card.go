@@ -48,7 +48,7 @@ type GenerateCardRepoInput struct {
 
 type CardRepository interface {
 	Generate(generateCardDTO *GenerateCardRepoInput) (*Card, error)
-	GetByToken(token string) (*Card, error)
+	GetByPan(pan string) (*Card, error)
 }
 
 type CardService struct {
@@ -123,7 +123,7 @@ func (s *CardService) GetByToken(token string) (*Card, error) {
 		return nil, err
 	}
 
-	card, err := s.cardRepository.GetByToken(string(pan))
+	card, err := s.cardRepository.GetByPan(string(pan))
 	if err != nil {
 		return nil, err
 	}
