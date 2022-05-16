@@ -5,7 +5,7 @@ import (
 	"math/big"
 
 	carddetails "github.com/bmviniciuss/tcc/card/src/core/cardDetails"
-	"github.com/jaswdr/faker"
+	"github.com/bxcodec/faker/v3"
 )
 
 type carddetailsgenerator struct {
@@ -30,8 +30,7 @@ func (g *carddetailsgenerator) Generate() (*carddetails.CardDetails, error) {
 }
 
 func generatePAN() string {
-	faker := faker.New()
-	return faker.Payment().CreditCardNumber()
+	return faker.CCNumber()
 }
 
 func generateCVV() (string, error) {
