@@ -6,7 +6,6 @@ import (
 	"crypto/cipher"
 	b64 "encoding/base64"
 	"os"
-	"strings"
 )
 
 type Encrypter interface {
@@ -57,12 +56,18 @@ func (e *encryter) Decrypt(encryptedData []byte) (decryptedContent []byte, err e
 	mode := cipher.NewCBCDecrypter(block, iv)
 	mode.CryptBlocks(decodedData, decodedData)
 
-	cutTrailingSpaces := []byte(strings.TrimSpace(string(decodedData)))
-	return cutTrailingSpaces, err
+	unpaddedData := pKCS5UnPadding(decodedData)
+	return unpaddedData, nil
 }
 
 func pKCS5Padding(cipherText []byte, blockSize int) []byte {
 	padding := blockSize - len(cipherText)%blockSize
 	padText := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(cipherText, padText...)
+}
+
+func pKCS5UnPadding(src []byte) []byte {
+	length := len(src)
+	unpadding := int(src[length-1])
+	return src[:(length - unpadding)]
 }
