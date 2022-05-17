@@ -22,6 +22,7 @@ func NewCardsController(cardService *card.CardService) CardsController {
 
 func (c CardsController) Route(r chi.Router) {
 	r.Post("/", handleCreateCard(c.CardService))
+	r.Get("/", handleGetCard(c.CardService))
 }
 
 type PresentationCard struct {
@@ -75,18 +76,51 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 			return
 		}
 
-		presentationCard := PresentationCard{
-			Id:              card.Id,
-			CardholderName:  card.CardholderName,
-			Token:           card.Token,
-			MaskedNumber:    card.MaskedNumber,
-			ExpirationYear:  card.ExpirationYear,
-			ExpirationMonth: card.ExpirationMonth,
-			Active:          card.Active,
-			IsCredit:        card.IsCredit,
-			IsDebit:         card.IsDebit,
-		}
+		presentationCard := parseCardToPresentationCard(card)
+
 		rw.WriteHeader(http.StatusOK)
 		json.NewEncoder(rw).Encode(presentationCard)
+	}
+}
+
+func handleGetCard(cardService *card.CardService) func(rw http.ResponseWriter, r *http.Request) {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Set("Content-Type", "application/json")
+		log.Println("Calling GET /cards")
+		cardToken := r.URL.Query().Get("token")
+		log.Println("Card token:", cardToken)
+
+		if cardToken == "" {
+			rw.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(rw).Encode(map[string]string{"error": "Token is required"})
+			return
+		}
+
+		card, err := cardService.GetByToken(cardToken)
+
+		if err != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
+			return
+		}
+
+		presentationCard := parseCardToPresentationCard(card)
+
+		rw.WriteHeader(http.StatusOK)
+		json.NewEncoder(rw).Encode(presentationCard)
+	}
+}
+
+func parseCardToPresentationCard(card *card.Card) PresentationCard {
+	return PresentationCard{
+		Id:              card.Id,
+		CardholderName:  card.CardholderName,
+		Token:           card.Token,
+		MaskedNumber:    card.MaskedNumber,
+		ExpirationYear:  card.ExpirationYear,
+		ExpirationMonth: card.ExpirationMonth,
+		Active:          card.Active,
+		IsCredit:        card.IsCredit,
+		IsDebit:         card.IsDebit,
 	}
 }
