@@ -6,17 +6,17 @@ import (
 )
 
 type PostgresCard struct {
-	Id              string
+	Id              string `db:"id"`
 	Number          string `db:"pan"`
 	MaskedNumber    string `db:"masked_pan"`
-	Cvv             string
+	Cvv             string `db:"cvv"`
 	CardholderName  string `db:"cardholder_name"`
-	Token           string
-	ExpirationYear  int
-	ExpirationMonth int
-	Active          *bool
-	IsCredit        *bool
-	IsDebit         *bool
+	Token           string `db:"token"`
+	ExpirationYear  int    `db:"expiration_year"`
+	ExpirationMonth int    `db:"expiration_month"`
+	Active          *bool  `db:"active"`
+	IsCredit        *bool  `db:"is_credit"`
+	IsDebit         *bool  `db:"is_debit"`
 }
 
 func (PostgresCard) TableName() string {
@@ -72,9 +72,8 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 }
 
 func (r *postgresCardRepository) GetByPan(pan string) (*card.Card, error) {
-	var pgCard PostgresCard
-
-	err := r.Db.Get(&pgCard, "SELECT * FROM public.cards c WHERE c.pan = $1", pan)
+	pgCard := PostgresCard{}
+	err := r.Db.Get(&pgCard, "select c.* from cards c where c.pan=$1 LIMIT 1", pan)
 
 	if err != nil {
 		return nil, err
