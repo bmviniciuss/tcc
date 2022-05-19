@@ -1,12 +1,9 @@
 import fastify from 'fastify'
 
-import logger from '../utils/logger'
+import routes from './routes'
 
 const app = fastify({ logger: false })
 
-app.get('/health', async () => {
-  logger.info('GET /health was called')
-  return { alive: true }
-})
+app.register(routes, { prefix: 'api' })
 
 export default app

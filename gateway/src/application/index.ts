@@ -6,6 +6,7 @@ async function main (): Promise<void> {
     await app.listen(ENV.PORT)
     console.log('Server listening on port: ', ENV.PORT)
   } catch (error) {
+    console.error(error)
     app.log.error(error)
     process.exit(1)
   }
