@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { Card } from '../../core/card/Card'
 import { CardAPI, CreateCardInput } from '../../core/card/card.interface'
+import logger from '../../utils/logger'
 
 type CreateCardRequest = {
   cardholder_name: string
@@ -22,6 +23,8 @@ type CreateCardResponse = {
 }
 
 export default class AxiosHttpCardAPI implements CardAPI {
+  private readonly logger = logger.child({ label: AxiosHttpCardAPI.name })
+
   async create ({ isDebit, isCredit, cardholderName }: CreateCardInput): Promise<Card> {
     try {
       const request: CreateCardRequest = {
@@ -29,7 +32,7 @@ export default class AxiosHttpCardAPI implements CardAPI {
         is_credit: isCredit,
         is_debit: isDebit
       }
-      const URL = 'http://localhost:3333/api/cards'
+      const URL = 'http://localhost:3333/api/cards' // TODO: move to env variables
       const { data } = await axios.post<CreateCardResponse>(URL, request)
       return {
         id: data.id,
@@ -43,8 +46,11 @@ export default class AxiosHttpCardAPI implements CardAPI {
         isDebit: data.is_debit
       }
     } catch (error) {
-      console.error('Error in create card http request', error)
-      throw new Error('HttpCreateCardError') // TODO: Better error handling
+      this.logger.error('Error in create card http request')
+      this.logger.error(error)
+      let message = 'Internal error while creating card'
+      if (error instanceof Error) message = error?.message
+      throw new Error(message) // TODO: Better error handling
     }
   }
 }
