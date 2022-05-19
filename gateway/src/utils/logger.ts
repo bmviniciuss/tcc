@@ -7,8 +7,7 @@ const logger = createLogger({
     format.errors({ stack: true }),
     format.splat(),
     format.json()
-  ),
-  defaultMeta: { service: 'gateway' }
+  )
 })
 
 if (process.env.NODE_ENV !== 'production') {
