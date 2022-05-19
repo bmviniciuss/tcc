@@ -14,3 +14,11 @@ Content-Type: application/json
     "is_credit": true,
     "is_debit": true
 }
+
+###
+
+@token = 0TsxAesmDiCKkTtAlxokM4SWk1hv035otGpa/zB1DwQ=
+
+# Find card by token
+GET {{host}}/api/cards?token={{token}}
+Content-Type: application/json

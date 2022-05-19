@@ -30,6 +30,7 @@ type GenerateCardServiceInput struct {
 
 type Service interface {
 	Generate(generateCardDTO *GenerateCardServiceInput) (*Card, error)
+	GetByToken(token string) (*Card, error)
 }
 
 type GenerateCardRepoInput struct {
@@ -47,6 +48,7 @@ type GenerateCardRepoInput struct {
 
 type CardRepository interface {
 	Generate(generateCardDTO *GenerateCardRepoInput) (*Card, error)
+	GetByPan(pan string) (*Card, error)
 }
 
 type CardService struct {
@@ -107,6 +109,21 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 
 	card, err := s.cardRepository.Generate(generateCardInput)
 
+	if err != nil {
+		return nil, err
+	}
+
+	return card, nil
+}
+
+func (s *CardService) GetByToken(token string) (*Card, error) {
+	pan, err := s.encrypter.Decrypt([]byte(token))
+
+	if err != nil {
+		return nil, err
+	}
+
+	card, err := s.cardRepository.GetByPan(string(pan))
 	if err != nil {
 		return nil, err
 	}
