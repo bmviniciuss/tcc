@@ -9,6 +9,8 @@ export default async function cardsRoutes (fastify: FastifyInstance) {
     method: 'POST',
     url: '/',
     schema: {
+      description: 'Create a new card',
+      tags: ['cards'],
       body: {
         type: 'object',
         required: ['cardholder_name', 'is_credit', 'is_debit'],
