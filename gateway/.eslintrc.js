@@ -16,6 +16,7 @@ module.exports = {
     'eslint-plugin-import-helpers'
   ],
   rules: {
+    'camelcase': 0,
     'no-useless-constructor': 0,
     'import-helpers/order-imports': [
       'error',
