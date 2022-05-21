@@ -35,8 +35,23 @@ type PaymentInfo struct {
 	CardToken string `json:"card_token"`
 }
 
+type CardPaymentResponse struct {
+	Id          string              `json:"id"`
+	ClientId    string              `json:"client_id"`
+	Amount      float64             `json:"amount"`
+	PaymentType string              `json:"payment_type"`
+	PaymentDate time.Time           `json:"payment_date"`
+	PaymentInfo PaymentInfoResponse `json:"payment_info"`
+}
+
+type PaymentInfoResponse struct {
+	MaskedNumber string `json:"masked_number"`
+}
+
 func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
 		var cardPaymentRequest CardPaymentRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&cardPaymentRequest); err != nil {
@@ -57,12 +72,24 @@ func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWr
 		payment, err := paymentService.Process(&input)
 
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"error":   true,
+				"message": err.Error(),
+			})
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(payment)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"data": CardPaymentResponse{
+				Id:          payment.Id,
+				ClientId:    payment.ClientId,
+				Amount:      payment.Amount,
+				PaymentType: payment.PaymentType,
+				PaymentDate: payment.PaymentDate,
+				PaymentInfo: PaymentInfoResponse{
+					MaskedNumber: payment.PaymentInfo.MaskedNumber,
+				},
+			}})
 	}
 }
