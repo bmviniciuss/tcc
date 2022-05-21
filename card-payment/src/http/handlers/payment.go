@@ -92,17 +92,18 @@ func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWr
 			return
 		}
 
+		cardPaymentResponse := CardPaymentResponse{
+			Id:          payment.Id,
+			ClientId:    payment.ClientId,
+			Amount:      payment.Amount,
+			PaymentType: payment.PaymentType,
+			PaymentDate: payment.PaymentDate,
+			PaymentInfo: PaymentInfoResponse{
+				MaskedNumber: payment.PaymentInfo.MaskedNumber,
+			},
+		}
+
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"data": CardPaymentResponse{
-				Id:          payment.Id,
-				ClientId:    payment.ClientId,
-				Amount:      payment.Amount,
-				PaymentType: payment.PaymentType,
-				PaymentDate: payment.PaymentDate,
-				PaymentInfo: PaymentInfoResponse{
-					MaskedNumber: payment.PaymentInfo.MaskedNumber,
-				},
-			}})
+		json.NewEncoder(w).Encode(cardPaymentResponse)
 	}
 }
