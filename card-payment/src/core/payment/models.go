@@ -10,29 +10,22 @@ const (
 type Payment struct {
 	Id          string
 	ClientId    string
+	Amount      float64
 	PaymentType string
-	Amount      Amount
 	PaymentInfo PaymentInfo
-	Buyer       Buyer
-	Date        time.Time
+	PaymentDate time.Time
+	Payable     Payable
 }
 
 type Amount struct {
-	Value    int
+	Value    float64
 	Currency string
 }
 
 type PaymentInfo struct {
-	CardholderName      string
-	CardToken           string
-	MaskedNumber        string
-	CardExpirationYear  int
-	CardExpirationMonth int
-}
-
-type Buyer struct {
-	Name           string
-	DocumentNumber string
+	CardholderName string
+	CardToken      string
+	MaskedNumber   string
 }
 
 type Card struct {
@@ -45,4 +38,12 @@ type Card struct {
 	Active          bool   `json:"active"`
 	IsCredit        bool   `json:"is_credit"`
 	IsDebit         bool   `json:"is_debit"`
+}
+
+type Payable struct {
+	Id          string
+	ClientId    string
+	PaymentId   string
+	PaymentDate time.Time
+	Amount      float64
 }

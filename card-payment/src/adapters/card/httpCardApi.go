@@ -11,11 +11,14 @@ import (
 type HTTPCardAPI struct {
 }
 
-func NewHTTPClient() *HTTPCardAPI {
+func NewHTTPCardAPI() *HTTPCardAPI {
 	return &HTTPCardAPI{}
 }
 
 type CardResponse struct {
+	Data Card `json:"data"`
+}
+type Card struct {
 	Id              string `json:"id"`
 	CardholderName  string `json:"cardholder_name"`
 	Token           string `json:"token"`
@@ -42,14 +45,14 @@ func (c *HTTPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
 	}
 
 	return &payment.Card{
-		Id:              cardResponse.Id,
-		CardholderName:  cardResponse.CardholderName,
-		Token:           cardResponse.Token,
-		MaskedNumber:    cardResponse.MaskedNumber,
-		ExpirationYear:  cardResponse.ExpirationYear,
-		ExpirationMonth: cardResponse.ExpirationMonth,
-		Active:          cardResponse.Active,
-		IsCredit:        cardResponse.IsCredit,
-		IsDebit:         cardResponse.IsDebit,
+		Id:              cardResponse.Data.Id,
+		CardholderName:  cardResponse.Data.CardholderName,
+		Token:           cardResponse.Data.Token,
+		MaskedNumber:    cardResponse.Data.MaskedNumber,
+		ExpirationYear:  cardResponse.Data.ExpirationYear,
+		ExpirationMonth: cardResponse.Data.ExpirationMonth,
+		Active:          cardResponse.Data.Active,
+		IsCredit:        cardResponse.Data.IsCredit,
+		IsDebit:         cardResponse.Data.IsDebit,
 	}, nil
 }
