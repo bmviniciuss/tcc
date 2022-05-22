@@ -2,7 +2,6 @@ package grpccard
 
 import (
 	"context"
-	"log"
 
 	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
 	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
@@ -33,8 +32,6 @@ func NewCardServiceServer(db *sqlx.DB) *CardServiceServer {
 }
 
 func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardRequest) (*pb.FullCard, error) {
-	log.Printf("Received: %v %v %v\n", in.GetCardholderName(), in.GetIsCredit(), in.GetIsDebit())
-
 	input := card.GenerateCardServiceInput{
 		CardholderName: in.GetCardholderName(),
 		IsCredit:       in.GetIsCredit(),
@@ -51,6 +48,28 @@ func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardR
 		Id:              card.Id,
 		Number:          card.Number,
 		Cvv:             card.Cvv,
+		CardholderName:  card.CardholderName,
+		Token:           card.Token,
+		MaskedNumber:    card.MaskedNumber,
+		ExpirationYear:  int64(card.ExpirationYear),
+		ExpirationMonth: int64(card.ExpirationMonth),
+		Active:          card.Active,
+		IsCredit:        card.IsCredit,
+		IsDebit:         card.IsDebit,
+	}, nil
+}
+
+func (s *CardServiceServer) GetCardByToken(ctx context.Context, in *pb.GetCardByTokenRequest) (*pb.Card, error) {
+	token := in.GetToken()
+
+	card, err := s.CardService.GetByToken(token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Card{
+		Id:              card.Id,
 		CardholderName:  card.CardholderName,
 		Token:           card.Token,
 		MaskedNumber:    card.MaskedNumber,
