@@ -6,6 +6,7 @@ package cards;
 
 service Cards {
   rpc GenerateCard(CreateCardRequest) returns (FullCard) {}
+  rpc GetCardByToken(GetCardByTokenRequest) returns (Card) {}
 }
 
 message CreateCardRequest {
@@ -26,4 +27,21 @@ message FullCard {
   bool   active = 9;
   bool   isCredit = 10;
   bool   isDebit = 11;
+}
+
+
+message GetCardByTokenRequest {
+  string token = 1;
+}
+
+message Card {
+  string id = 1;
+  string cardholderName = 2;
+  string token = 3;
+  string maskedNumber = 4; 
+  int64  expirationYear = 5;
+  int64  expirationMonth = 6;
+  bool   active = 7;
+  bool   isCredit = 8;
+  bool   isDebit = 9;
 }
