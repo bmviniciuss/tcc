@@ -1,5 +1,6 @@
 import { credentials } from 'grpc'
 
+import { ENV } from '../../application/config/env'
 import { Card } from '../../core/card/Card'
 import { CardAPI, CreateCardInput } from '../../core/card/card.interface'
 import logger from '../../utils/logger'
@@ -12,7 +13,7 @@ export default class GRPCCardApi implements CardAPI {
   async create ({ isDebit, isCredit, cardholderName }: CreateCardInput): Promise<Card> {
     this.logger.info('Creating card through GRPC client')
     return new Promise((resolve, reject) => {
-      const client = new CardsClient('localhost:3333', credentials.createInsecure())
+      const client = new CardsClient(ENV.CARD_GRPC_HOST, credentials.createInsecure())
       const request = new CreateCardRequest()
       request.setCardholderName(cardholderName)
       request.setIscredit(isCredit)
