@@ -6,12 +6,14 @@
   "scripts": {
     "local:start": "ts-node-dev --respawn --transpile-only src/application/index.ts",
     "lint": "eslint 'src/**' --quiet",
-    "lint:fix": "eslint 'src/**' --quiet --fix"
+    "lint:fix": "eslint 'src/**' --quiet --fix",
+    "proto:build": "rimraf ./src/adapters/grpc/pb/* && sh ./scripts/build-grpc.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/long": "^4.0.2",
     "@types/node": "^17.0.30",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",
@@ -22,6 +24,9 @@
     "eslint-plugin-n": "^15.2.0",
     "eslint-plugin-promise": "^6.0.0",
     "git-commit-msg-linter": "^4.1.2",
+    "grpc_tools_node_protoc_ts": "^5.3.2",
+    "grpc-tools": "^1.11.2",
+    "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.4"
   },
@@ -29,6 +34,7 @@
     "@fastify/swagger": "^6.0.1",
     "axios": "^0.27.2",
     "fastify": "^3.29.0",
+    "grpc": "^1.24.11",
     "winston": "^3.7.2"
   }
 }

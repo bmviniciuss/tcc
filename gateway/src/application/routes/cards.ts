@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 
 import AxiosHttpCardAPI from '../../adapters/card/AxiosHttpCardAPI'
+import GRPCCardApi from '../../adapters/card/GRPCCardAPI'
 import CardService from '../../core/card/CardService'
 import { CreateCardHandler } from '../../handlers/cards/cardHandlers'
 
@@ -22,8 +23,9 @@ export default async function cardsRoutes (fastify: FastifyInstance) {
       }
     },
     handler: async (req, res) => {
-      const cardAPI = new AxiosHttpCardAPI()
-      const cardService = new CardService(cardAPI)
+      const grpcCardApi = new GRPCCardApi()
+      // const cardAPI = new AxiosHttpCardAPI()
+      const cardService = new CardService(grpcCardApi)
       const handler = new CreateCardHandler(cardService)
       return handler.handle(req, res)
     }
