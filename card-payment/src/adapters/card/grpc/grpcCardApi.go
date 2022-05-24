@@ -4,18 +4,18 @@ import (
 	"context"
 	"log"
 
-	"github.com/bmviniciuss/tcc/card-payment/src/adapters/grpc/pb"
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
+	"github.com/bmviniciuss/tcc/card-payment/src/grpc/pb"
 	"google.golang.org/grpc"
 )
 
-type GRPCCardClient struct {
+type GRPCardAPI struct {
 	Conn *grpc.ClientConn
 }
 
-func NewGRPCCardClient(Conn *grpc.ClientConn) *GRPCCardClient {
+func NewGRPCardAPI(Conn *grpc.ClientConn) *GRPCardAPI {
 
-	return &GRPCCardClient{
+	return &GRPCardAPI{
 		Conn: Conn,
 	}
 }
@@ -36,16 +36,16 @@ type Card struct {
 	IsDebit         bool   `json:"is_debit"`
 }
 
-func (c *GRPCCardClient) GetCardByToken(token string) (*payment.Card, error) {
-	log.Println("[GRPCCardClient] GetCardByToken")
+func (c *GRPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
+	log.Println("[GRPCardAPI] GetCardByToken")
 
 	client := pb.NewCardsClient(c.Conn)
 	resp, err := client.GetCardByToken(context.Background(), &pb.GetCardByTokenRequest{Token: token})
 
-	log.Printf("[GRPCCardClient] GetCardByToken resp: %v", resp)
+	log.Printf("[GRPCardAPI] GetCardByToken resp: %v", resp)
 
 	if err != nil {
-		log.Println("[GRPCCardClient] GetCardByToken error: ", err)
+		log.Println("[GRPCardAPI] GetCardByToken error: ", err)
 		return nil, err
 	}
 
