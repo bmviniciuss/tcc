@@ -1,8 +1,11 @@
 import { FastifyInstance } from 'fastify'
 
 import AxiosHttpCardPaymentAPI from '../../adapters/card-payment/AxiosHttpCardPaymentAPI'
+import GRPCCardPaymentAPI from '../../adapters/card-payment/GRPCCardPaymentAPI'
 import CardPaymentService from '../../core/card-payment/CardPaymentService'
-import { CreateCardPaymentHandler } from '../../handlers/payments/cardPaymentHandlers'
+import { CreateCardPaymentHandler } from '../../handlers/payments/CreateCardPaymentHandler'
+import logger from '../../utils/logger'
+import { ENV } from '../config/env'
 
 export default async function paymentRoutes (fastify: FastifyInstance) {
   fastify.route({
@@ -30,8 +33,18 @@ export default async function paymentRoutes (fastify: FastifyInstance) {
       }
     },
     handler: async (req, res) => {
-      const cardPaymentApi = new AxiosHttpCardPaymentAPI()
-      const cardPaymentService = new CardPaymentService(cardPaymentApi)
+      const l = logger.child({ label: 'paymentRoutes.POST.handler' })
+      l.info('Process started')
+      l.info(ENV)
+      const api = (() => {
+        if (ENV.ENABLE_GRPC) {
+          l.info('Using gRPC Api for payment processing')
+          return new GRPCCardPaymentAPI()
+        }
+        l.info('Using gRPC Api for payment processing')
+        return new AxiosHttpCardPaymentAPI()
+      })()
+      const cardPaymentService = new CardPaymentService(api)
       const handler = new CreateCardPaymentHandler(cardPaymentService)
       return handler.handle(req, res)
     }
