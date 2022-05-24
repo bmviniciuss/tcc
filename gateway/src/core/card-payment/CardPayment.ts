@@ -5,6 +5,7 @@ export enum PaymentType {
 }
 
 export type CardPayment = {
+  id: string
   clientId: string
   paymentType: PaymentType
   paymentDate: string

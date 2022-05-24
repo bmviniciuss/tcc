@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROTO_PATH=../proto
-GENERATION_PATH=./src/adapters/grpc/pb
+GENERATION_PATH=./src/grpc/pb
 
 rm $GENERATION_PATH/*
 

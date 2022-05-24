@@ -42,6 +42,7 @@ export default class AxiosHttpCardPaymentAPI implements CardPaymentAPI {
       const { data } = await axios.post<CreateCardPaymentResponse>(URL, requestPayload)
 
       return {
+        id: data.id,
         paymentDate: data.payment_date,
         paymentInfo: {
           maskedNumber: data.payment_info.masked_number
