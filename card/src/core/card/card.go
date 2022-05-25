@@ -1,6 +1,7 @@
 package card
 
 import (
+	"log"
 	"strings"
 	"time"
 
@@ -78,13 +79,18 @@ func getCardExpiration() (int, int) {
 }
 
 func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInput) (*Card, error) {
+	log.Println("[CardService] Generating card")
+	log.Println("[CardService] Generating card details")
 	cardDetails, err := s.cardDetailsGenerator.Generate()
 
 	if err != nil {
+		log.Println("[CardService] Error generating card details")
 		return nil, err
 	}
 
+	log.Println("[CardService] Generating card expiration")
 	year, month := getCardExpiration()
+	log.Println("[CardService] Masking card PAN")
 	MaskedNumber := maskPANNumber(cardDetails.Number)
 
 	generateCardInput := &GenerateCardRepoInput{
@@ -99,34 +105,46 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 		IsDebit:         generateCardServiceInput.IsDebit,
 	}
 
+	log.Println("[CardService] Encrypting card number")
 	enctypedCardNumber, err := s.encrypter.Encrypt([]byte(cardDetails.Number))
 
 	if err != nil {
+		log.Println("[CardService] Error encrypting card number", err)
 		return nil, err
 	}
 
 	generateCardInput.Token = string(enctypedCardNumber)
 
+	log.Println("[CardService] Saving card")
 	card, err := s.cardRepository.Generate(generateCardInput)
 
 	if err != nil {
+		log.Println("[CardService] Error saving card", err)
 		return nil, err
 	}
 
+	log.Println("[CardService] Card saved")
 	return card, nil
 }
 
 func (s *CardService) GetByToken(token string) (*Card, error) {
+	log.Println("[CardService] Getting card by token")
+	log.Println("[CardService] Decrypting card number")
 	pan, err := s.encrypter.Decrypt([]byte(token))
 
 	if err != nil {
+		log.Println("[CardService] Error decrypting card number", err)
 		return nil, err
 	}
 
+	log.Println("[CardService] Getting card by PAN")
 	card, err := s.cardRepository.GetByPan(string(pan))
+
 	if err != nil {
+		log.Println("[CardService] Error getting card by PAN", err)
 		return nil, err
 	}
 
+	log.Println("[CardService] Card found")
 	return card, nil
 }
