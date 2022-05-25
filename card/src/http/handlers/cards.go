@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"log"
 	"net/http"
 
@@ -45,25 +47,39 @@ type CreateCardRequest struct {
 
 func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		validate := validator.New()
-		rw.Header().Set("Content-Type", "application/json")
 		log.Println("Calling POST /cards")
+
+		rw.Header().Set("Content-Type", "application/json")
+		validate := validator.New()
 		var createCardRequest CreateCardRequest
 
+		log.Println("[handleCreateCard] Decoding request body")
 		if err := json.NewDecoder(r.Body).Decode(&createCardRequest); err != nil {
+			log.Println("[handleCreateCard] Error decoding request body:", err)
 			rw.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
+
+			errorMessage := ""
+			if errors.Is(err, io.EOF) {
+				errorMessage = "Request body is empty"
+			} else {
+				errorMessage = err.Error()
+			}
+
+			json.NewEncoder(rw).Encode(map[string]string{"error": errorMessage})
 			return
 		}
 
+		log.Println("[handleCreateCard] Validating request body")
 		err := validate.Struct(createCardRequest)
 
 		if err != nil {
+			log.Println("[handleCreateCard] Error validating request body:", err)
 			rw.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
 			return
 		}
 
+		log.Println("[handleCreateCard] Generating card")
 		card, err := cardService.Generate(&card.GenerateCardServiceInput{
 			CardholderName: createCardRequest.CardholderName,
 			IsCredit:       createCardRequest.IsCredit,
@@ -71,13 +87,14 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 		})
 
 		if err != nil {
+			log.Println("[handleCreateCard] Error generating card:", err)
 			rw.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
 			return
 		}
 
+		log.Println("[handleCreateCard] Card generated")
 		presentationCard := parseCardToPresentationCard(card)
-
 		rw.WriteHeader(http.StatusOK)
 		json.NewEncoder(rw).Encode(presentationCard)
 	}
@@ -88,22 +105,26 @@ func handleGetCard(cardService *card.CardService) func(rw http.ResponseWriter, r
 		rw.Header().Set("Content-Type", "application/json")
 		log.Println("Calling GET /cards")
 		cardToken := r.URL.Query().Get("token")
-		log.Println("Card token:", cardToken)
+		log.Println("[handleGetCard] Getting card with token:", cardToken)
 
 		if cardToken == "" {
+			log.Println("[handleGetCard] Error getting card: token is empty")
 			rw.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(rw).Encode(map[string]string{"error": "Token is required"})
 			return
 		}
 
+		log.Println("[handleGetCard] Getting card")
 		card, err := cardService.GetByToken(cardToken)
 
 		if err != nil {
+			log.Println("[handleGetCard] Error getting card:", err)
 			rw.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
 			return
 		}
 
+		log.Println("[handleGetCard] Card found")
 		presentationCard := parseCardToPresentationCard(card)
 
 		rw.WriteHeader(http.StatusOK)
