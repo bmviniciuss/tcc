@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/bmviniciuss/tcc/card/src/adapter/db"
+	"github.com/bmviniciuss/tcc/card/src/factories"
 	grpccard "github.com/bmviniciuss/tcc/card/src/grpc"
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card/src/http"
@@ -58,7 +59,8 @@ func runHTTP(db *sqlx.DB) {
 	log.Println("[HTTP] Starting HTTP server...")
 
 	appPort := os.Getenv("PORT")
-	mux := api.NewApi(db)
+	cardService := factories.CardServiceFactory(db)
+	mux := api.NewApi(cardService)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%s", appPort),
