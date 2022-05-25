@@ -2,6 +2,7 @@ package grpccard
 
 import (
 	"context"
+	"log"
 
 	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
 	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
@@ -32,17 +33,23 @@ func NewCardServiceServer(db *sqlx.DB) *CardServiceServer {
 }
 
 func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardRequest) (*pb.FullCard, error) {
+	log.Println("[gRPC] GenerateCard called")
+
 	input := card.GenerateCardServiceInput{
 		CardholderName: in.GetCardholderName(),
 		IsCredit:       in.GetIsCredit(),
 		IsDebit:        in.GetIsDebit(),
 	}
 
+	log.Println("[gRPC] Calling card service to generate card")
 	card, err := s.CardService.Generate(&input)
 
 	if err != nil {
+		log.Println("[gRPC] Error generating card: ", err)
 		return nil, err
 	}
+
+	log.Println("[gRPC] Card generated. Returning results")
 
 	return &pb.FullCard{
 		Id:              card.Id,
@@ -60,13 +67,19 @@ func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardR
 }
 
 func (s *CardServiceServer) GetCardByToken(ctx context.Context, in *pb.GetCardByTokenRequest) (*pb.Card, error) {
+	log.Println("[gRPC] GetCardByToken called")
 	token := in.GetToken()
+	log.Println("[gRPC] Token: ", token)
 
+	log.Println("[gRPC] Calling card service to get card by token")
 	card, err := s.CardService.GetByToken(token)
 
 	if err != nil {
+		log.Println("[gRPC] Error getting card by token: ", err)
 		return nil, err
 	}
+
+	log.Println("[gRPC] Card found. Returning results")
 
 	return &pb.Card{
 		Id:              card.Id,
