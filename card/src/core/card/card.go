@@ -128,16 +128,23 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 }
 
 func (s *CardService) GetByToken(token string) (*Card, error) {
+	log.Println("[CardService] Getting card by token")
+	log.Println("[CardService] Decrypting card number")
 	pan, err := s.encrypter.Decrypt([]byte(token))
 
 	if err != nil {
+		log.Println("[CardService] Error decrypting card number", err)
 		return nil, err
 	}
 
+	log.Println("[CardService] Getting card by PAN")
 	card, err := s.cardRepository.GetByPan(string(pan))
+
 	if err != nil {
+		log.Println("[CardService] Error getting card by PAN", err)
 		return nil, err
 	}
 
+	log.Println("[CardService] Card found")
 	return card, nil
 }
