@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package="github.com/bmviniciuss/tcc/card/src/grpc/pb";
+
+package cardpayment;
+
+service CardPayment {
+  rpc ProccessCardPayment(ProcessCardPaymentInput) returns (Payment) {}
+}
+
+message ProcessCardPaymentInput {
+  string clientId = 1;
+  PaymentTypeEnum paymentType = 2;
+  string paymentDate = 3;
+  float amount = 4;
+  PaymentInfoInput paymentInfo = 5;
+}
+
+enum PaymentTypeEnum {
+  CREDIT_CARD = 0;
+  DEBIT_CARD = 1;
+}
+
+message PaymentInfoInput {
+  string cardToken = 1;
+}
+
+message Payment {
+  string id = 1;
+  string clientId = 2;
+  string paymentType = 3;
+  string paymentDate = 4;
+  float amount = 5;
+  PaymentInfo paymentInfo = 6;
+}
+
+message PaymentInfo {
+  string maskedNumber = 1;
+}
