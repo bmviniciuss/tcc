@@ -41,8 +41,8 @@ type PresentationCard struct {
 
 type CreateCardRequest struct {
 	CardholderName string `json:"cardholder_name" validate:"required"`
-	IsCredit       bool   `json:"is_credit" validate:"required"`
-	IsDebit        bool   `json:"is_debit" valid:"required"`
+	IsCredit       *bool  `json:"is_credit" validate:"required"`
+	IsDebit        *bool  `json:"is_debit" valid:"required"`
 }
 
 func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter, r *http.Request) {
@@ -82,8 +82,8 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 		log.Println("[handleCreateCard] Generating card")
 		card, err := cardService.Generate(&card.GenerateCardServiceInput{
 			CardholderName: createCardRequest.CardholderName,
-			IsCredit:       createCardRequest.IsCredit,
-			IsDebit:        createCardRequest.IsDebit,
+			IsCredit:       *createCardRequest.IsCredit,
+			IsDebit:        *createCardRequest.IsDebit,
 		})
 
 		if err != nil {
