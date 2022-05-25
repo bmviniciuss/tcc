@@ -36,13 +36,13 @@ func (e *encryter) Encrypt(content []byte) (encryptedContent []byte, err error) 
 	IV := []byte(os.Getenv("ENCRYPTION_IV"))
 	mode := cipher.NewCBCEncrypter(block, IV)
 	mode.CryptBlocks(ciphertext, plainText)
-	encoded := b64.StdEncoding.EncodeToString(ciphertext)
+	encoded := b64.RawURLEncoding.EncodeToString(ciphertext)
 	return []byte(encoded), nil
 }
 
 func (e *encryter) Decrypt(encryptedData []byte) (decryptedContent []byte, err error) {
 	iv := []byte(os.Getenv("ENCRYPTION_IV"))
-	decodedData, err := b64.StdEncoding.DecodeString(string(encryptedData))
+	decodedData, err := b64.RawURLEncoding.DecodeString(string(encryptedData))
 
 	if err != nil {
 		return nil, err
