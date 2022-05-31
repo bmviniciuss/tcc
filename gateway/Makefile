@@ -1,13 +1,16 @@
 .PHONY: build run reflex
 
+clean:
+	rm -rf ./dist
+
 build:
-	go build -o ./build/api ./src/cmd/api/main.go
+	npm run build
 
 build-protobuf:
 	sh ./scripts/build-proto.sh
 
 run-prd: build
-	./build/api
+	node ./dist/application/index.js
 
 run-dev:
-	reflex --start-service -r '\.go$$' make run
+	npm run local:start

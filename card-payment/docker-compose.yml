@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: root
       POSTGRES_DB: "cards-payments"
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./src/migrations/01-create-tables.sql:/docker-entrypoint-initdb.d/01-create-tables.sql
