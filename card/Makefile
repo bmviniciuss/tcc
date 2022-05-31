@@ -6,8 +6,8 @@ build:
 build-protobuf:
 	sh ./scripts/build-proto.sh
 
-run: build
+run-prd: build
 	./build/api
 
-reflex:
+run-dev:
 	reflex --start-service -r '\.go$$' make run
