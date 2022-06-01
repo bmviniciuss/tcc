@@ -61,7 +61,7 @@ func (r *postgresPaymentRepository) Create(payment *payment.Payment) error {
 
 func createPayment(tx *sqlx.Tx, payment *payment.Payment) error {
 	sql := `
-		INSERT INTO public.payments 
+		INSERT INTO cardpaymentms.payments 
 		(client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date) 
 		VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id
 	`
@@ -86,7 +86,7 @@ func createPayment(tx *sqlx.Tx, payment *payment.Payment) error {
 
 func createPayable(tx *sqlx.Tx, payment *payment.Payment) error {
 	sql := `
-		INSERT INTO public.payables 
+		INSERT INTO cardpaymentms.payables 
 		(client_id, payment_id, payment_date, amount) 
 		VALUES($1, $2, $3, $4) RETURNING id
 	`

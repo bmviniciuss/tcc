@@ -13,6 +13,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./card/src/migrations/01-create-cards-table.sql:/docker-entrypoint-initdb.d/01-create-cards-table.sql
+      - ./card-payment/src/migrations/01-create-tables.sql:/docker-entrypoint-initdb.d/01-create-tables.sql
     networks:
       - base
 
@@ -34,6 +35,28 @@ services:
       - DATABASE_NAME=ms
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
+      - GRPC_ENABLED=true
+    networks:
+      - base
+  
+  card-payment-app:
+    restart: on-failure:10
+    depends_on:
+      - db
+      - card-app
+    build:
+      context: ./card-payment
+      dockerfile: Dockerfile.prod
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=ms
+      - CARD_HOST=card-app:5000
       - GRPC_ENABLED=true
     networks:
       - base

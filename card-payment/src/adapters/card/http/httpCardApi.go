@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
 )
@@ -31,7 +32,7 @@ type Card struct {
 }
 
 func (c *HTTPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
-	url := fmt.Sprintf("http://localhost:3333/api/cards?token=%s", token)
+	url := fmt.Sprintf("http://%s/api/cards?token=%s", os.Getenv("CARD_HOST"), token)
 	resp, err := http.Get(url)
 
 	if err != nil {
