@@ -17,8 +17,9 @@ services:
     networks:
       - base
 
-  card-app:
+  card:
     restart: on-failure:10
+    container_name: card-app
     depends_on:
       - db
     build:
@@ -39,11 +40,12 @@ services:
     networks:
       - base
   
-  card-payment-app:
+  card-payment:
+    container_name: card-payment-app
     restart: on-failure:10
     depends_on:
       - db
-      - card-app
+      - card
     build:
       context: ./card-payment
       dockerfile: Dockerfile.prod
@@ -51,6 +53,29 @@ services:
       - "5001:5001"
     environment:
       - PORT=5001
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=ms
+      - CARD_HOST=card-app:5000
+      - GRPC_ENABLED=true
+    networks:
+      - base
+
+  gateway:
+    container_name: gateway-app
+    restart: on-failure:10
+    depends_on:
+      - card-payment
+      - card
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "5003:3000"
+    environment:
+      - PORT=3000
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - DATABASE_USER=root
