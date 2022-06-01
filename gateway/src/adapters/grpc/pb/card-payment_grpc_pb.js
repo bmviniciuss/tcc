@@ -1,7 +1,7 @@
 // GENERATED CODE -- DO NOT EDIT!
 
 'use strict';
-var grpc = require('grpc');
+var grpc = require('@grpc/grpc-js');
 var card$payment_pb = require('./card-payment_pb.js');
 
 function serialize_cardpayment_Payment(arg) {
