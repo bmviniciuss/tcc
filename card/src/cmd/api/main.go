@@ -13,17 +13,18 @@ import (
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card/src/http"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	// err := godotenv.Load()
+	err := godotenv.Load()
 
-	// if err != nil {
-	// 	log.Fatal("[Main] Error loading .env file")
-	// }
+	if err != nil {
+		log.Fatal("[Main] Error loading .env file")
+	}
 
 	db := db.ConnectDB()
 	grpcEnabled := os.Getenv("GRPC_ENABLED")

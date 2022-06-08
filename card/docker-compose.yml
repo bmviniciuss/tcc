@@ -7,10 +7,12 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
+      POSTGRES_DB: cards-ms
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./src/migrations/01-create-cards-table.sql:/docker-entrypoint-initdb.d/01-create-cards-table.sql
 
 volumes:
   db_data:
