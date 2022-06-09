@@ -1,4 +1,4 @@
-import { credentials } from 'grpc'
+import { credentials } from '@grpc/grpc-js'
 
 import { ENV } from '../../application/config/env'
 import { CardPaymentAPI, CreateCardPaymentInput } from '../../core/card-payment/card-payment.interface'

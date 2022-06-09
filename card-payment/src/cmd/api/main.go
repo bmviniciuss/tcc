@@ -13,17 +13,16 @@ import (
 	"github.com/bmviniciuss/tcc/card-payment/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card-payment/src/http"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	err := godotenv.Load()
+	// err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	db := db.ConnectDB()
 	appPort := os.Getenv("PORT")

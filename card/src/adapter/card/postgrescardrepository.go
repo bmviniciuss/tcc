@@ -49,7 +49,7 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 		IsDebit:         &generateCardDTO.IsDebit,
 	}
 
-	insertSQL := "INSERT INTO public.cards (id, pan, masked_pan, cvv, cardholder_name, \"token\", expiration_year, expiration_month, active, is_debit, is_credit) VALUES(uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
+	insertSQL := "INSERT INTO cardms.cards (id, pan, masked_pan, cvv, cardholder_name, \"token\", expiration_year, expiration_month, active, is_debit, is_credit) VALUES(uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
 	err := r.Db.QueryRow(insertSQL, pgCard.Number, pgCard.MaskedNumber, pgCard.Cvv, pgCard.CardholderName, pgCard.Token, pgCard.ExpirationYear, pgCard.ExpirationMonth, pgCard.Active, pgCard.IsDebit, pgCard.IsCredit).Scan(&id)
 
 	if err != nil {
@@ -73,7 +73,7 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 
 func (r *postgresCardRepository) GetByPan(pan string) (*card.Card, error) {
 	pgCard := PostgresCard{}
-	err := r.Db.Get(&pgCard, "select c.* from cards c where c.pan=$1 LIMIT 1", pan)
+	err := r.Db.Get(&pgCard, "select c.* from cardms.cards c where c.pan=$1 LIMIT 1", pan)
 
 	if err != nil {
 		return nil, err

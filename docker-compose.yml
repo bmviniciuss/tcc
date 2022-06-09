@@ -1,0 +1,93 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ms
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./card/src/migrations/01-create-cards-table.sql:/docker-entrypoint-initdb.d/01-create-cards-table.sql
+      - ./card-payment/src/migrations/01-create-tables.sql:/docker-entrypoint-initdb.d/01-create-tables.sql
+    networks:
+      - base
+
+  card:
+    restart: on-failure:10
+    container_name: card-app
+    depends_on:
+      - db
+    build:
+      context: ./card
+      dockerfile: Dockerfile.prod
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - ENCRYPTION_KEY=gFvJR96@UXYrq_2m
+      - ENCRYPTION_IV=fXkFQG4!rP*RNeZ8
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=ms
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - GRPC_ENABLED=true
+    networks:
+      - base
+  
+  card-payment:
+    container_name: card-payment-app
+    restart: on-failure:10
+    depends_on:
+      - db
+      - card
+    build:
+      context: ./card-payment
+      dockerfile: Dockerfile.prod
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=ms
+      - CARD_HOST=card-app:5000
+      - GRPC_ENABLED=true
+    networks:
+      - base
+
+  gateway:
+    container_name: gateway-app
+    restart: on-failure:10
+    depends_on:
+      - card-payment
+      - card
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "5003:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=ms
+      - CARD_HOST=card-app:5000
+      - GRPC_ENABLED=true
+    networks:
+      - base
+
+networks:
+  base:
+
+volumes:
+  db_data:

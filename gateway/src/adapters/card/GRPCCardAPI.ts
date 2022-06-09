@@ -1,4 +1,4 @@
-import { credentials } from 'grpc'
+import { credentials } from '@grpc/grpc-js'
 
 import { ENV } from '../../application/config/env'
 import { Card } from '../../core/card/Card'

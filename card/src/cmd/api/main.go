@@ -13,8 +13,8 @@ import (
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card/src/http"
 	"github.com/jmoiron/sqlx"
-
 	"github.com/joho/godotenv"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

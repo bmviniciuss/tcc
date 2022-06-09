@@ -19,7 +19,7 @@ func NewCardApi() payment.CardAPI {
 
 	if e == "true" {
 		log.Println("Creating a gRPC card API")
-		host := os.Getenv("CARD_GRPC_HOST")
+		host := os.Getenv("CARD_HOST")
 		grpcConn, err := grpc.Dial(host, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 		if err != nil {

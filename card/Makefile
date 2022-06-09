@@ -9,5 +9,8 @@ build-protobuf:
 run-prd: build
 	./build/api
 
+install-reflex:
+	go install github.com/cespare/reflex@latest
+
 run-dev:
-	reflex --start-service -r '\.go$$' make run
+	reflex --start-service -r '\.go$$' go run ./src/cmd/api/main.go
