@@ -37,7 +37,6 @@ export class CreateCardPaymentHandler {
       const cardPayment = await this.cardPaymentService.create(createCardInput)
       return CreateCardPaymentHandler.mapToPresentationPayment(cardPayment)
     } catch (error) {
-      console.error(error)
       return res.status(500).send({
         message: 'Internal Error while processing card payment'
       })
