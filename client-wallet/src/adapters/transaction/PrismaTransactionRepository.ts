@@ -30,19 +30,6 @@ export default class PrismaTransactionRepository implements ITransactionReposito
     }
   }
 
-  private mapPrismaTransactionToCoreTransaction (data: PrismaTransaction): Transaction {
-    return {
-      id: data.id,
-      clientId: data.clientId,
-      amount: data.amount,
-      type: PrismaTransactionRepository.mapTransactionType(data.type),
-      transactionServiceId: data.transactionServiceId ?? undefined,
-      transactionDate: data.transactionDate,
-      createdAt: data.createdAt,
-      service: PrismaTransactionRepository.mapServiceType(data.service)
-    }
-  }
-
   async getByClientId (clientId: string): Promise<Transaction[]> {
     try {
       const data = await this.prisma.prismaTransaction.findMany({
@@ -53,6 +40,36 @@ export default class PrismaTransactionRepository implements ITransactionReposito
       this.logger.error('Error getting transactions by clientId')
       this.logger.error(error?.message)
       throw new Error('Error while getting transactions by clientId')
+    }
+  }
+
+  async getBalanceByClientId (clientId: string): Promise<number> {
+    try {
+      const balance = await this.prisma.prismaTransaction.aggregate({
+        where: { clientId },
+        _sum: { amount: true }
+      })
+      if (!balance?._sum?.amount) return 0
+      return balance?._sum?.amount
+    } catch (error: any) {
+      this.logger.error('Error getting balance by clientId')
+      this.logger.error(error?.message)
+      throw new Error('Error while getting clients balance')
+    }
+  }
+
+  // TODO: move mapping to a separate service
+
+  private mapPrismaTransactionToCoreTransaction (data: PrismaTransaction): Transaction {
+    return {
+      id: data.id,
+      clientId: data.clientId,
+      amount: data.amount,
+      type: PrismaTransactionRepository.mapTransactionType(data.type),
+      transactionServiceId: data.transactionServiceId ?? undefined,
+      transactionDate: data.transactionDate,
+      createdAt: data.createdAt,
+      service: PrismaTransactionRepository.mapServiceType(data.service)
     }
   }
 

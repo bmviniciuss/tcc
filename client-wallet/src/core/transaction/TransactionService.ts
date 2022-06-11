@@ -15,4 +15,9 @@ export default class TransactionService implements ITransactionService {
     this.logger.info('Listing transactions by clientId')
     return this.transactionRepository.getByClientId(clientId)
   }
+
+  getBalanceByClientId (clientId: string): Promise<number> {
+    this.logger.info('Getting balance by clientId')
+    return this.transactionRepository.getBalanceByClientId(clientId)
+  }
 }

@@ -7,9 +7,11 @@ export type CreateTransactionInput = Pick<Transaction,
 export interface ITransactionService {
   create(transaction: CreateTransactionInput): Promise<Transaction>
   listByClientId(clientId: string): Promise<Transaction[]>
+  getBalanceByClientId(clientId: string): Promise<number>
 }
 
 export interface ITransactionRepository {
   create(transaction: CreateTransactionInput): Promise<Transaction>
   getByClientId(clientId: string): Promise<Transaction[]>
+  getBalanceByClientId(clientId: string): Promise<number>
 }
