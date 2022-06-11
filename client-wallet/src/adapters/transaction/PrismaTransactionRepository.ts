@@ -58,8 +58,34 @@ export default class PrismaTransactionRepository implements ITransactionReposito
     }
   }
 
-  // TODO: move mapping to a separate service
+  async getClientTransaction (clientId: string, transactionId: string): Promise<Transaction | undefined> {
+    try {
+      this.logger.info('Getting transaction by clientId and transactionId')
+      console.log({
+        id: transactionId,
+        clientId
+      })
+      const data = await this.prisma.prismaTransaction.findFirst({
+        where: {
+          id: transactionId,
+          clientId
+        }
+      })
 
+      if (!data) {
+        this.logger.info('Transaction not found')
+        return undefined
+      }
+
+      return this.mapPrismaTransactionToCoreTransaction(data)
+    } catch (error: any) {
+      this.logger.error('Error getting client transaction')
+      this.logger.error(error?.message)
+      throw new Error('Error while getting client transaction')
+    }
+  }
+
+  // TODO: move mapping to a separate service
   private mapPrismaTransactionToCoreTransaction (data: PrismaTransaction): Transaction {
     return {
       id: data.id,

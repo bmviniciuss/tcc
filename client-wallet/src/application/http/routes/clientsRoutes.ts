@@ -10,6 +10,10 @@ type ClientIdParams = {
   clientId: string
 }
 
+type TransactionIdParams = {
+  transactionId: string
+}
+
 export const clientsRoutes = (prisma: PrismaClient): FastifyPluginCallback => {
   return async (fastify) => {
     const l = logger.child({ label: clientsRoutes.name })
@@ -30,6 +34,32 @@ export const clientsRoutes = (prisma: PrismaClient): FastifyPluginCallback => {
         const transactions = await service.listByClientId(request.params.clientId)
         const presentation = transactions.map(PresentationTransactionMapper.mapTransactionToPresentation)
         return reply.status(200).send(presentation)
+      } catch (error: any) {
+        l.error('Error creating transaction', error)
+        return reply.status(500).send({ error: error?.message })
+      }
+    })
+
+    fastify.get<{ Params: ClientIdParams & TransactionIdParams }>('/:clientId/transactions/:transactionId', {
+      schema: {
+        params: {
+          clientId: {
+            type: 'string'
+          },
+          transactionId: {
+            type: 'string'
+          }
+        }
+      }
+    }, async (request, reply) => {
+      try {
+        l.info('Received transaction request')
+        const prismaTransactionRepository = new PrismaTransactionRepository(prisma)
+        const service = new TransactionService(prismaTransactionRepository)
+        const { clientId, transactionId } = request.params
+        const transaction = await service.getClientTransaction(clientId, transactionId)
+        if (!transaction) return reply.status(404).send({ message: 'Transaction not found' })
+        return reply.status(200).send(PresentationTransactionMapper.mapTransactionToPresentation(transaction))
       } catch (error: any) {
         l.error('Error creating transaction', error)
         return reply.status(500).send({ error: error?.message })

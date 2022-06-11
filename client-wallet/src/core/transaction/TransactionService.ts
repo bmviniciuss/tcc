@@ -20,4 +20,9 @@ export default class TransactionService implements ITransactionService {
     this.logger.info('Getting balance by clientId')
     return this.transactionRepository.getBalanceByClientId(clientId)
   }
+
+  getClientTransaction (clientId: string, transactionId: string): Promise<Transaction | undefined> {
+    this.logger.info('Getting transaction by clientId and transactionId')
+    return this.transactionRepository.getClientTransaction(clientId, transactionId)
+  }
 }
