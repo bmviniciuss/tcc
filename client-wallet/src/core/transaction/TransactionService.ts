@@ -10,4 +10,9 @@ export default class TransactionService implements ITransactionService {
     this.logger.info('Creating transaction')
     return this.transactionRepository.create(transaction)
   }
+
+  listByClientId (clientId: string): Promise<Transaction[]> {
+    this.logger.info('Listing transactions by clientId')
+    return this.transactionRepository.getByClientId(clientId)
+  }
 }

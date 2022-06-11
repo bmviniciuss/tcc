@@ -43,6 +43,19 @@ export default class PrismaTransactionRepository implements ITransactionReposito
     }
   }
 
+  async getByClientId (clientId: string): Promise<Transaction[]> {
+    try {
+      const data = await this.prisma.prismaTransaction.findMany({
+        where: { clientId }
+      })
+      return data.map(this.mapPrismaTransactionToCoreTransaction)
+    } catch (error: any) {
+      this.logger.error('Error getting transactions by clientId')
+      this.logger.error(error?.message)
+      throw new Error('Error while getting transactions by clientId')
+    }
+  }
+
   private static mapTransactionType (type: PrismaTransactionType): TransactionType {
     switch (type) {
       case 'CREDIT_CARD_PAYMENT':
