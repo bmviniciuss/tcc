@@ -1,13 +1,11 @@
-import { FastifyInstance, FastifyPluginCallback } from 'fastify'
-import logger from '../../utils/logger'
 import { PrismaClient } from '@prisma/client'
-import { transactionsRoutes } from './routes/transactionsRoutes'
+import { FastifyInstance, FastifyPluginCallback } from 'fastify'
+
 import { clientsRoutes } from './routes/clientsRoutes'
+import { transactionsRoutes } from './routes/transactionsRoutes'
 
 const routes = (prisma: PrismaClient): FastifyPluginCallback => {
   return async (fastify: FastifyInstance, _, done) => {
-    const l = logger.child({ label: 'routes' })
-
     fastify.get('/health', async () => {
       return { ok: true }
     })

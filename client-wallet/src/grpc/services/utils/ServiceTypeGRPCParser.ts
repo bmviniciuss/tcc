@@ -1,5 +1,5 @@
-import { ServiceTypeEnum } from '../../pb/client_wallet_pb'
 import { ServiceType } from '../../../core/transaction/Transaction'
+import { ServiceTypeEnum } from '../../pb/client_wallet_pb'
 
 export default class ServiceTypeGRPCParser {
   public static toDomain (service: ServiceTypeEnum): ServiceType {

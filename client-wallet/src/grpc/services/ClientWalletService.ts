@@ -1,15 +1,15 @@
 import grpc from '@grpc/grpc-js'
 
-import { IClientWalletServer } from '../pb/client_wallet_grpc_pb'
-import { CreateTransactionInput, Transaction } from '../pb/client_wallet_pb'
-import logger from '../../utils/logger'
+import { Transaction as CoreTransaction } from '../../core/transaction/Transaction'
 import {
   CreateTransactionInput as CoreCreateTransactionInput,
   ITransactionService
 } from '../../core/transaction/transaction.interfaces'
-import { Transaction as CoreTransaction } from '../../core/transaction/Transaction'
-import TransactionTypeGRPCParser from './utils/TransactionTypeGRPCParser'
+import logger from '../../utils/logger'
+import { IClientWalletServer } from '../pb/client_wallet_grpc_pb'
+import { CreateTransactionInput, Transaction } from '../pb/client_wallet_pb'
 import ServiceTypeGRPCParser from './utils/ServiceTypeGRPCParser'
+import TransactionTypeGRPCParser from './utils/TransactionTypeGRPCParser'
 
 export class ClientWalletServiceImpl implements IClientWalletServer {
   private readonly l = logger.child({ label: ClientWalletServiceImpl.name })

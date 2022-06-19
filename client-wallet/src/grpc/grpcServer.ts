@@ -1,11 +1,11 @@
 import { Server } from '@grpc/grpc-js'
-
-import { ClientWalletServiceImpl } from './services/ClientWalletService'
-import TransactionService from '../core/transaction/TransactionService'
 import { PrismaClient } from '@prisma/client'
-import { ClientWalletService } from './pb/client_wallet_grpc_pb'
+
 import PrismaTransactionRepository from '../adapters/transaction/PrismaTransactionRepository'
+import TransactionService from '../core/transaction/TransactionService'
 import logger from '../utils/logger'
+import { ClientWalletService } from './pb/client_wallet_grpc_pb'
+import { ClientWalletServiceImpl } from './services/ClientWalletService'
 
 export function makeGRPCServer (prismaClient: PrismaClient) {
   const l = logger.child({ label: makeGRPCServer.name })

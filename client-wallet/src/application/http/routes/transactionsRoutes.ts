@@ -3,11 +3,11 @@ import { FastifyPluginCallback } from 'fastify'
 import { FromSchema } from 'json-schema-to-ts'
 
 import PrismaTransactionRepository from '../../../adapters/transaction/PrismaTransactionRepository'
-import TransactionService from '../../../core/transaction/TransactionService'
 import { CreateTransactionInput } from '../../../core/transaction/transaction.interfaces'
+import TransactionService from '../../../core/transaction/TransactionService'
 import logger from '../../../utils/logger'
-import { TransactionRequestSchema } from './schemas/transaction'
 import PresentationTransactionMapper from '../mappers/PresentationTransactionMapper'
+import { TransactionRequestSchema } from './schemas/transaction'
 
 export const transactionsRoutes = (prisma: PrismaClient): FastifyPluginCallback => {
   return async (fastify) => {

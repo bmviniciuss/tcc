@@ -2,8 +2,8 @@ import { FromSchema } from 'json-schema-to-ts'
 
 import { Transaction } from '../../../core/transaction/Transaction'
 import { CreateTransactionInput } from '../../../core/transaction/transaction.interfaces'
-import { TransactionRequestSchema } from '../routes/schemas/transaction'
 import { PresentationTransaction } from '../routes/models/transaction'
+import { TransactionRequestSchema } from '../routes/schemas/transaction'
 
 export default class PresentationTransactionMapper {
   static mapTransactionToPresentation (transaction: Transaction): PresentationTransaction {

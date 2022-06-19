@@ -1,5 +1,5 @@
-import { TransactionTypeEnum } from '../../pb/client_wallet_pb'
 import { TransactionType } from '../../../core/transaction/Transaction'
+import { TransactionTypeEnum } from '../../pb/client_wallet_pb'
 
 export default class TransactionTypeGRPCParser {
   public static toDomain (type: TransactionTypeEnum): TransactionType {

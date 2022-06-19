@@ -1,9 +1,10 @@
-import logger from '../utils/logger'
-import { GRPC_ENABLED, PORT } from '../config/env'
-import makeHttpApp from './http/app'
-import { PrismaClient } from '@prisma/client'
-import { makeGRPCServer } from '../grpc/grpcServer'
 import { ServerCredentials } from '@grpc/grpc-js'
+import { PrismaClient } from '@prisma/client'
+
+import { GRPC_ENABLED, PORT } from '../config/env'
+import { makeGRPCServer } from '../grpc/grpcServer'
+import logger from '../utils/logger'
+import makeHttpApp from './http/app'
 
 const prisma = new PrismaClient()
 console.log('PROCESS: ', process.env?.GRPC_ENABLED, process.env?.GRPC_ENABLED === 'true')

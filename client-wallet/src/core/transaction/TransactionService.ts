@@ -1,6 +1,6 @@
-import { CreateTransactionInput, ITransactionRepository, ITransactionService } from './transaction.interfaces'
-import { Transaction } from './Transaction'
 import logger from '../../utils/logger'
+import { Transaction } from './Transaction'
+import { CreateTransactionInput, ITransactionRepository, ITransactionService } from './transaction.interfaces'
 
 export default class TransactionService implements ITransactionService {
   private readonly logger = logger.child({ label: TransactionService.name })

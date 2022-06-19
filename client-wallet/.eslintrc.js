@@ -18,6 +18,7 @@ module.exports = {
   ],
   rules: {
     'no-useless-constructor': 0,
+    camelcase: 0,
     'import-helpers/order-imports': [
       'error',
       {
