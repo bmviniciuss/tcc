@@ -7,8 +7,7 @@ import logger from '../utils/logger'
 import makeHttpApp from './http/app'
 
 const prisma = new PrismaClient()
-console.log('PROCESS: ', process.env?.GRPC_ENABLED, process.env?.GRPC_ENABLED === 'true')
-console.log('GRPC_ENABLED: ', GRPC_ENABLED)
+
 function runGRPC () {
   const l = logger.child({ label: 'runGRPC' })
   const grpcServer = makeGRPCServer(prisma)
