@@ -44,6 +44,7 @@ export class ClientWalletServiceImpl implements IClientWalletServer {
 
   private static buildTransactionResponse (transaction: CoreTransaction) {
     return new Transaction()
+      .setId(transaction.id)
       .setClientId(transaction.clientId)
       .setAmount(transaction.amount)
       .setType(TransactionTypeGRPCParser.toGRPC(transaction.type))
