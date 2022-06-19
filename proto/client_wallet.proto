@@ -5,6 +5,7 @@ package clientwallet;
 service ClientWallet {
   rpc CreateTransaction(CreateTransactionInput) returns (Transaction) {}
   rpc GetClientBalance(GetBalanceInput) returns (BalanceReturn) {}
+  rpc GetClientTransactions(GetClientTransactionsInput) returns (ClientTransactionsReturn) {}
 }
 
 enum TransactionTypeEnum {
@@ -44,4 +45,12 @@ message GetBalanceInput {
 
 message BalanceReturn {
   double balance = 1;
+}
+
+message GetClientTransactionsInput {
+  string client_id = 1;
+}
+
+message ClientTransactionsReturn {
+  repeated Transaction transactions = 1;
 }

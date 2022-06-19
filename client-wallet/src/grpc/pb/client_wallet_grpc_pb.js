@@ -15,6 +15,17 @@ function deserialize_clientwallet_BalanceReturn(buffer_arg) {
   return client_wallet_pb.BalanceReturn.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_clientwallet_ClientTransactionsReturn(arg) {
+  if (!(arg instanceof client_wallet_pb.ClientTransactionsReturn)) {
+    throw new Error('Expected argument of type clientwallet.ClientTransactionsReturn');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_clientwallet_ClientTransactionsReturn(buffer_arg) {
+  return client_wallet_pb.ClientTransactionsReturn.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_clientwallet_CreateTransactionInput(arg) {
   if (!(arg instanceof client_wallet_pb.CreateTransactionInput)) {
     throw new Error('Expected argument of type clientwallet.CreateTransactionInput');
@@ -35,6 +46,17 @@ function serialize_clientwallet_GetBalanceInput(arg) {
 
 function deserialize_clientwallet_GetBalanceInput(buffer_arg) {
   return client_wallet_pb.GetBalanceInput.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_clientwallet_GetClientTransactionsInput(arg) {
+  if (!(arg instanceof client_wallet_pb.GetClientTransactionsInput)) {
+    throw new Error('Expected argument of type clientwallet.GetClientTransactionsInput');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_clientwallet_GetClientTransactionsInput(buffer_arg) {
+  return client_wallet_pb.GetClientTransactionsInput.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_clientwallet_Transaction(arg) {
@@ -71,6 +93,17 @@ var ClientWalletService = exports.ClientWalletService = {
     requestDeserialize: deserialize_clientwallet_GetBalanceInput,
     responseSerialize: serialize_clientwallet_BalanceReturn,
     responseDeserialize: deserialize_clientwallet_BalanceReturn,
+  },
+  getClientTransactions: {
+    path: '/clientwallet.ClientWallet/GetClientTransactions',
+    requestStream: false,
+    responseStream: false,
+    requestType: client_wallet_pb.GetClientTransactionsInput,
+    responseType: client_wallet_pb.ClientTransactionsReturn,
+    requestSerialize: serialize_clientwallet_GetClientTransactionsInput,
+    requestDeserialize: deserialize_clientwallet_GetClientTransactionsInput,
+    responseSerialize: serialize_clientwallet_ClientTransactionsReturn,
+    responseDeserialize: deserialize_clientwallet_ClientTransactionsReturn,
   },
 };
 

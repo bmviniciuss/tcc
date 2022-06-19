@@ -7,7 +7,10 @@ import {
 } from '../../core/transaction/transaction.interfaces'
 import logger from '../../utils/logger'
 import { IClientWalletServer } from '../pb/client_wallet_grpc_pb'
-import { BalanceReturn, CreateTransactionInput, GetBalanceInput, Transaction } from '../pb/client_wallet_pb'
+import {
+  BalanceReturn,
+  ClientTransactionsReturn, CreateTransactionInput, GetBalanceInput, GetClientTransactionsInput, Transaction
+} from '../pb/client_wallet_pb'
 import ServiceTypeGRPCParser from './utils/ServiceTypeGRPCParser'
 import TransactionTypeGRPCParser from './utils/TransactionTypeGRPCParser'
 
@@ -82,6 +85,25 @@ export class ClientWalletServiceImpl implements IClientWalletServer {
         .setBalance(balance)
 
       callback(null, balanceReturn)
+    }).catch(error => {
+      this.l.error('[gRPC] Error creating transaction', error)
+      callback(error, null)
+    })
+  }
+
+  getClientTransactions (call: grpc.ServerUnaryCall<GetClientTransactionsInput, ClientTransactionsReturn>, callback: grpc.sendUnaryData<ClientTransactionsReturn>) {
+    this.l.info('[gRPC] Received transactions request')
+    const clientId = call.request.getClientId()
+
+    if (!clientId) {
+      this.l.error('[gRPC] Client id is required')
+      callback(new Error('Client id is required'), null)
+      return
+    }
+
+    this.transactionService.listByClientId(clientId).then(transactions => {
+      const grpcTransactions = transactions.map(ClientWalletServiceImpl.buildTransactionResponse)
+      callback(null, new ClientTransactionsReturn().setTransactionsList(grpcTransactions))
     }).catch(error => {
       this.l.error('[gRPC] Error creating transaction', error)
       callback(error, null)

@@ -122,6 +122,48 @@ export namespace BalanceReturn {
     }
 }
 
+export class GetClientTransactionsInput extends jspb.Message { 
+    getClientId(): string;
+    setClientId(value: string): GetClientTransactionsInput;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetClientTransactionsInput.AsObject;
+    static toObject(includeInstance: boolean, msg: GetClientTransactionsInput): GetClientTransactionsInput.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetClientTransactionsInput, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetClientTransactionsInput;
+    static deserializeBinaryFromReader(message: GetClientTransactionsInput, reader: jspb.BinaryReader): GetClientTransactionsInput;
+}
+
+export namespace GetClientTransactionsInput {
+    export type AsObject = {
+        clientId: string,
+    }
+}
+
+export class ClientTransactionsReturn extends jspb.Message { 
+    clearTransactionsList(): void;
+    getTransactionsList(): Array<Transaction>;
+    setTransactionsList(value: Array<Transaction>): ClientTransactionsReturn;
+    addTransactions(value?: Transaction, index?: number): Transaction;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ClientTransactionsReturn.AsObject;
+    static toObject(includeInstance: boolean, msg: ClientTransactionsReturn): ClientTransactionsReturn.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ClientTransactionsReturn, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ClientTransactionsReturn;
+    static deserializeBinaryFromReader(message: ClientTransactionsReturn, reader: jspb.BinaryReader): ClientTransactionsReturn;
+}
+
+export namespace ClientTransactionsReturn {
+    export type AsObject = {
+        transactionsList: Array<Transaction.AsObject>,
+    }
+}
+
 export enum TransactionTypeEnum {
     CREDIT_CARD_PAYMENT = 0,
     DEBIT_CARD_PAYMENT = 1,
