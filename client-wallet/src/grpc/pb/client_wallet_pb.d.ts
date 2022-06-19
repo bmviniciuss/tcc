@@ -82,6 +82,46 @@ export namespace CreateTransactionInput {
     }
 }
 
+export class GetBalanceInput extends jspb.Message { 
+    getClientId(): string;
+    setClientId(value: string): GetBalanceInput;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetBalanceInput.AsObject;
+    static toObject(includeInstance: boolean, msg: GetBalanceInput): GetBalanceInput.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetBalanceInput, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetBalanceInput;
+    static deserializeBinaryFromReader(message: GetBalanceInput, reader: jspb.BinaryReader): GetBalanceInput;
+}
+
+export namespace GetBalanceInput {
+    export type AsObject = {
+        clientId: string,
+    }
+}
+
+export class BalanceReturn extends jspb.Message { 
+    getBalance(): number;
+    setBalance(value: number): BalanceReturn;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): BalanceReturn.AsObject;
+    static toObject(includeInstance: boolean, msg: BalanceReturn): BalanceReturn.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: BalanceReturn, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): BalanceReturn;
+    static deserializeBinaryFromReader(message: BalanceReturn, reader: jspb.BinaryReader): BalanceReturn;
+}
+
+export namespace BalanceReturn {
+    export type AsObject = {
+        balance: number,
+    }
+}
+
 export enum TransactionTypeEnum {
     CREDIT_CARD_PAYMENT = 0,
     DEBIT_CARD_PAYMENT = 1,

@@ -3,7 +3,8 @@ syntax = "proto3";
 package clientwallet;
 
 service ClientWallet {
-    rpc CreateTransaction(CreateTransactionInput) returns (Transaction) {}
+  rpc CreateTransaction(CreateTransactionInput) returns (Transaction) {}
+  rpc GetClientBalance(GetBalanceInput) returns (BalanceReturn) {}
 }
 
 enum TransactionTypeEnum {
@@ -35,4 +36,12 @@ message CreateTransactionInput {
   ServiceTypeEnum service = 4;
   string transaction_service_id = 5;
   string transaction_date = 6;
+}
+
+message GetBalanceInput {
+  string client_id = 1;
+}
+
+message BalanceReturn {
+  double balance = 1;
 }
