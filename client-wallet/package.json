@@ -8,7 +8,8 @@
     "prod:start": "node dist/application/index.js",
     "local:start": "ts-node-dev --exit-child --respawn --transpile-only src/application/index.ts",
     "lint": "eslint 'src/**' --quiet",
-    "lint:fix": "eslint 'src/**' --quiet --fix"
+    "lint:fix": "eslint 'src/**' --quiet --fix",
+    "build:proto": "sh ./scripts/build-grpc.sh"
   },
   "keywords": [],
   "author": "",
