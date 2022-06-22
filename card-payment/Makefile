@@ -9,5 +9,5 @@ build-protobuf:
 run-prd: build
 	./build/api
 
-run-dev:
-	reflex --start-service -r '\.go$$' make run
+dev:
+	reflex --start-service -r '\.go$$' go run ./src/cmd/api/main.go
