@@ -12,6 +12,7 @@ export default class PrismaTransactionRepository implements ITransactionReposito
   async create (transaction: CreateTransactionInput): Promise<Transaction> {
     this.logger.info('Saving transaction to database')
     try {
+      this.logger.info('Saving transaction: ', transaction)
       const data = await this.prisma.prismaTransaction.create({
         data: {
           clientId: transaction.clientId,
