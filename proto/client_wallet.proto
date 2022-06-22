@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package="github.com/bmviniciuss/tcc/card/src/grpc/pb";
+
 package clientwallet;
 
 service ClientWallet {
