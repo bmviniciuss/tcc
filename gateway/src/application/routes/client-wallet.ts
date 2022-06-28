@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 
 import AxiosClientWalletApi from '../../adapters/client-wallet/AxiosClientWalletApi'
+import GRPCClientWalletApi from '../../adapters/client-wallet/GRPCClientWalletApi'
 import ClientWalletService from '../../core/client-wallet/ClientWalletService'
 import logger from '../../utils/logger'
 import { ENV } from '../config/env'
@@ -16,7 +17,7 @@ export default async function clientWalletRoutes (fastify: FastifyInstance) {
     const clientWalletApi = (() => {
       if (ENV.ENABLE_GRPC) {
         l.info('Using GRPC Api for card generation')
-        throw new Error('Not implemented')
+        return new GRPCClientWalletApi()
       }
       l.info('Using HTTP Api for card generation')
       return new AxiosClientWalletApi()
