@@ -29,7 +29,21 @@ export default class AxiosClientWalletApi implements IClientWalletAPI {
     }
   }
 
-  getWalletBalance (clientId: string): Promise<GetWalletBalanceResult> {
-    throw new Error('Not Implemented')
+  async getWalletBalance (clientId: string): Promise<GetWalletBalanceResult> {
+    try {
+      this.logger.info('Calling client wallet api to get client wallet balance')
+      const base = ENV.CLIENT_WALLET_HOST
+      const url = `http://${base}/api/clients/${clientId}/balance`
+      const { data } = await axios.get(url)
+      return {
+        balance: data?.balance ?? 0
+      }
+    } catch (error) {
+      this.logger.error('Error in http request to get client wallet\'s balance')
+      this.logger.error(error)
+      let message = 'Internal error while fetching client wallet\'s balance'
+      if (error instanceof Error) message = error?.message
+      throw new Error(message) // TODO: Better error handling
+    }
   }
 }
