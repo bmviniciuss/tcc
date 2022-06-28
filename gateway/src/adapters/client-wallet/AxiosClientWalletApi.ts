@@ -1,7 +1,11 @@
 import axios from 'axios'
 
 import { ENV } from '../../application/config/env'
-import { GetClientTransactionsResult, IClientWalletAPI } from '../../core/client-wallet/client-wallet.interface'
+import {
+  GetClientTransactionsResult,
+  GetWalletBalanceResult,
+  IClientWalletAPI
+} from '../../core/client-wallet/client-wallet.interface'
 import logger from '../../utils/logger'
 
 export default class AxiosClientWalletApi implements IClientWalletAPI {
@@ -23,5 +27,9 @@ export default class AxiosClientWalletApi implements IClientWalletAPI {
       if (error instanceof Error) message = error?.message
       throw new Error(message) // TODO: Better error handling
     }
+  }
+
+  getWalletBalance (clientId: string): Promise<GetWalletBalanceResult> {
+    throw new Error('Not Implemented')
   }
 }
