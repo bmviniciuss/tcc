@@ -12,5 +12,5 @@ build-protobuf:
 run-prd: build
 	node ./dist/application/index.js
 
-run-dev:
+dev:
 	npm run local:start
