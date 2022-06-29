@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+import { ENV } from '../../application/config/env'
 import { Card } from '../../core/card/Card'
 import { CardAPI, CreateCardInput } from '../../core/card/card.interface'
 import logger from '../../utils/logger'
@@ -32,7 +33,8 @@ export default class AxiosHttpCardAPI implements CardAPI {
         is_credit: isCredit,
         is_debit: isDebit
       }
-      const URL = 'http://localhost:3333/api/cards' // TODO: move to env variables
+      const base = `http://${ENV.CARD_HOST}`
+      const URL = `${base}/api/cards`
       const { data } = await axios.post<CreateCardResponse>(URL, request)
       return {
         id: data.id,

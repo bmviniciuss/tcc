@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"log"
 	"time"
 )
 
@@ -108,6 +109,7 @@ func (s *PaymentService) Process(input *ProcessPaymentInput) (*Payment, error) {
 	err = s.ClientWalletTransactionAPI.Create(walletTransaction)
 
 	if err != nil {
+		log.Fatalln("AQUI> ", err)
 		return nil, err
 	}
 

@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/adapters/db"
 	"github.com/bmviniciuss/tcc/card-payment/src/factories"
@@ -26,6 +27,9 @@ func main() {
 	}
 
 	db := db.ConnectDB()
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
 	appPort := os.Getenv("PORT")
 	grpcEnabled := os.Getenv("GRPC_ENABLED")
 

@@ -9,7 +9,7 @@ build:
 build-protobuf:
 	sh ./scripts/build-proto.sh
 
-run-prd: build
+prd: build
 	node ./dist/application/index.js
 
 dev:

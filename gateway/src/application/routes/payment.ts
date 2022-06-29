@@ -7,6 +7,17 @@ import { CreateCardPaymentHandler } from '../../handlers/payments/CreateCardPaym
 import logger from '../../utils/logger'
 import { ENV } from '../config/env'
 
+const api = (() => {
+  console.log('ENABLE_GRPC: ', ENV.ENABLE_GRPC)
+  if (ENV.ENABLE_GRPC) {
+    console.log('GERANDO API GRPC')
+    return new GRPCCardPaymentAPI()
+  }
+  console.log('GERANDO API HTTP')
+
+  return new AxiosHttpCardPaymentAPI()
+})()
+
 export default async function paymentRoutes (fastify: FastifyInstance) {
   fastify.route({
     method: 'POST',
@@ -36,14 +47,7 @@ export default async function paymentRoutes (fastify: FastifyInstance) {
       const l = logger.child({ label: 'paymentRoutes.POST.handler' })
       l.info('Process started')
       l.info(ENV)
-      const api = (() => {
-        if (ENV.ENABLE_GRPC) {
-          l.info('Using gRPC Api for payment processing')
-          return new GRPCCardPaymentAPI()
-        }
-        l.info('Using gRPC Api for payment processing')
-        return new AxiosHttpCardPaymentAPI()
-      })()
+
       const cardPaymentService = new CardPaymentService(api)
       const handler = new CreateCardPaymentHandler(cardPaymentService)
       return handler.handle(req, res)

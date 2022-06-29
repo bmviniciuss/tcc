@@ -40,6 +40,7 @@ type Transaction struct {
 func (c *HTTPClientWalletTransactionAPI) Create(input *payment.ClientWalletTransaction) error {
 	log.Println("[HTTPClientWalletTransactionAPI] Creating Trasanction on client wallet")
 	client := resty.New()
+	client.SetTimeout(1 * time.Minute)
 
 	url := fmt.Sprintf("http://%s/api/transactions", os.Getenv("CLIENT_WALLET_HOST"))
 	log.Printf("Creating a new transaction on %s", url)
@@ -56,8 +57,9 @@ func (c *HTTPClientWalletTransactionAPI) Create(input *payment.ClientWalletTrans
 	fmt.Println(createTransactionPayload)
 
 	result := &CreateTransactionResult{}
-	_, err := client.R().EnableTrace().
+	_, err := client.R().
 		SetHeader("Content-Type", "application/json").
+		SetHeader("Connection", "close").
 		SetBody(createTransactionPayload).
 		SetResult(result).
 		Post(url)
@@ -65,6 +67,7 @@ func (c *HTTPClientWalletTransactionAPI) Create(input *payment.ClientWalletTrans
 	if err != nil {
 		log.Println("[HTTPClientWalletTransactionAPI] Error while making request to client wallet to create transaction")
 		log.Println("[HTTPClientWalletTransactionAPI] error: ", err)
+		log.Fatalln("Error, ", err)
 		return errors.New("Error while creating transaction on client wallet")
 	}
 

@@ -9,44 +9,41 @@ import { Payment, PaymentInfoInput, PaymentTypeEnum, ProcessCardPaymentInput } f
 
 export default class GRPCCardPaymentAPI implements CardPaymentAPI {
   private readonly logger = logger.child({ label: GRPCCardPaymentAPI.name })
+  private readonly client: CardPaymentClient
+
+  constructor () {
+    this.client = new CardPaymentClient(ENV.CARD_PAYMENT_HOST, credentials.createInsecure())
+  }
 
   async create ({ paymentDate, paymentInfo, paymentType, clientId, amount }: CreateCardPaymentInput): Promise<CardPayment> {
-    return new Promise((resolve, reject) => {
-      this.logger.info('Process started')
+    this.logger.info('Process started')
 
-      try {
-        this.logger.info(`Calling card-payment gRPC client at: ${ENV.CARD_PAYMENT_GRPC_HOST}`)
-        const client = new CardPaymentClient(ENV.CARD_PAYMENT_GRPC_HOST, credentials.createInsecure())
-        const request =
-          GRPCCardPaymentAPI.buildProcessPaymentCardRequest(amount, clientId, paymentDate, paymentType, paymentInfo)
+    try {
+      const request =
+        GRPCCardPaymentAPI.buildProcessPaymentCardRequest(amount, clientId, paymentDate, paymentType, paymentInfo)
 
-        client.proccessCardPayment(request, (error: ServiceError | null, res: Payment) => {
-          if (error != null) {
-            this.logger.error('Error while making gRPC request to create a card payment')
-            this.logger.error(error)
-            const fallbackMessage = 'An error occur while making a request to process the card payment'
-            return reject(new Error(GRPCCardPaymentAPI.getGRPCErrorMessage(error, fallbackMessage)))
-          }
-
-          this.logger.info('Successfully called gRPC process payment')
-
-          return resolve({
-            id: res.getId(),
-            clientId: res.getClientid(),
-            amount: res.getAmount(),
-            paymentDate: res.getPaymentdate(),
-            paymentInfo: {
-              maskedNumber: res.getPaymentinfo()?.getMaskednumber() ?? ''
-            },
-            paymentType: res.getPaymenttype() as PaymentType
-          })
+      const res: Payment = await new Promise((resolve, reject) => {
+        this.client.proccessCardPayment(request, (error: ServiceError | null, res: Payment) => {
+          if (error !== null) return reject(error)
+          return resolve(res)
         })
-      } catch (error) {
-        this.logger.error('Error while building the process card payment gRPC request')
-        this.logger.error(error)
-        reject(new Error('Internal error while processing card payment request'))
+      })
+
+      return {
+        id: res.getId(),
+        clientId: res.getClientid(),
+        amount: res.getAmount(),
+        paymentDate: res.getPaymentdate(),
+        paymentInfo: {
+          maskedNumber: res.getPaymentinfo()?.getMaskednumber() ?? ''
+        },
+        paymentType: res.getPaymenttype() as PaymentType
       }
-    })
+    } catch (error) {
+      this.logger.error('Error while building the process card payment gRPC request')
+      this.logger.error(error)
+      throw new Error('Internal error while processing card payment request')
+    }
   }
 
   private static buildProcessPaymentCardRequest (amount: number, clientId: string, paymentDate: string, paymentType: PaymentType, paymentInfo: { cardToken: string }) {

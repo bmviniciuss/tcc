@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+import { ENV } from '../../application/config/env'
 import { CardPaymentAPI, CreateCardPaymentInput } from '../../core/card-payment/card-payment.interface'
 import { CardPayment, PaymentType } from '../../core/card-payment/CardPayment'
 import logger from '../../utils/logger'
@@ -37,7 +38,7 @@ export default class AxiosHttpCardPaymentAPI implements CardPaymentAPI {
         },
         payment_type: input.paymentType
       }
-      const URL = 'http://localhost:5555/api/payment' // TODO: move to env variables
+      const URL = `http://${ENV.CARD_PAYMENT_HOST}/api/payment` // TODO: move to env variables
 
       const { data } = await axios.post<CreateCardPaymentResponse>(URL, requestPayload)
 
@@ -51,9 +52,9 @@ export default class AxiosHttpCardPaymentAPI implements CardPaymentAPI {
         amount: data.amount,
         clientId: data.client_id
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('Error in create card http request')
-      this.logger.error(error)
+      this.logger.error(error?.message)
       let message = 'Internal error while creating card'
       if (error instanceof Error) message = error?.message
       throw new Error(message) // TODO: Better error handling
