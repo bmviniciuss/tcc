@@ -11,7 +11,7 @@ const run = async (isGRPC = false) => {
     url: `http://${GATEWAY_HOST}/api`,
     requests: [
       {
-        path: `http://${GATEWAY_HOST}/api/cards`,
+        path: '/api/cards',
         method: 'POST',
         body: JSON.stringify({
           cardholder_name: 'Vinicius Barbosa',
@@ -22,38 +22,16 @@ const run = async (isGRPC = false) => {
           'Content-Type': 'application/json'
         },
         onResponse: (status, body, context) => {
-          if (status === 200) {
+          if (status >= 200 && status <= 299) {
             context.card_token = JSON.parse(body).token
           } else {
-            console.log('context: ', context)
-            console.log(status, body)
+            console.log('ERROR: ', status, body, context)
             throw new Error('Erro em request')
           }
         }
       }
-      // {
-
-      //   method: 'POST',
-      //   path: `http://${GATEWAY_HOST}/api/payments/card`,
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   setupRequest: (req, context) => ({
-      //     ...req,
-      //     body: JSON.stringify({
-      //       client_id: '79750f54-ef8f-48f8-acaf-6fd66cd9843f',
-      //       payment_type: 'CREDIT_CARD',
-      //       payment_date: '2022-06-29T03:55:18.436Z',
-      //       amount: 1000,
-      //       payment_info: {
-      //         card_token: context.card_token
-      //       }
-      //     })
-
-      //   })
-      // }
     ],
-    amount: 10000
+    amount: 500_000
   })
 
   const s = autocannon.printResult(result, {
@@ -63,9 +41,18 @@ const run = async (isGRPC = false) => {
 
   console.log(s)
 
-  // console.table(result)
-
-  // await writeFile(path.join('src', 'create-card', 'benchmarks', fileName), JSON.stringify(result))
+  await writeFile(path.join('src', 'create-card', 'benchmarks', fileName), JSON.stringify(result))
 }
 
-run(true)
+async function main () {
+  const grpc = false
+  console.log(`${grpc ? 'gRPC' : 'HTTP'} Gateway Benchmarking`)
+  const n = 1
+  for (let i = 0; i < n; i++) {
+    console.log(`Executing ${i + 1}/${n}`)
+    await run(grpc)
+  }
+  console.log('Done')
+}
+
+main()
