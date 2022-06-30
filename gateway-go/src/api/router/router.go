@@ -51,5 +51,8 @@ func buildTree(r *chi.Mux) {
 		r.Route("/cards", func(r chi.Router) {
 			handler.MakeCardHandlers(r, s)
 		})
+		r.Route("/payments", func(r chi.Router) {
+			handler.MakePaymentHandlers(r)
+		})
 	})
 }
