@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -47,7 +46,7 @@ func translateError(err error, trans ut.Translator) (errs []error) {
 	}
 	validatorErrs := err.(validator.ValidationErrors)
 	for _, e := range validatorErrs {
-		translatedErr := fmt.Errorf(e.Translate(trans))
+		translatedErr := errors.New(e.Translate(trans))
 		errs = append(errs, translatedErr)
 	}
 	return errs
@@ -72,7 +71,7 @@ func createCardPayment() http.HandlerFunc {
 
 		if errs := input.Validate(); len(errs) > 0 {
 			log.Println("Validation error for request body")
-			log.Println(err)
+			log.Println(errs)
 			http_utils.SetErrorResponse(w, http.StatusInternalServerError, errs[0])
 			return
 		}
