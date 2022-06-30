@@ -1,8 +1,9 @@
 {
-  "name": "env-modifier",
+  "name": "tcc-cli",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin":"./cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
@@ -11,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "commander": "^9.3.0",
     "envfile": "^6.17.0"
   },
   "devDependencies": {
