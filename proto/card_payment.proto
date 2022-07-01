@@ -12,7 +12,7 @@ message ProcessCardPaymentInput {
   string client_id = 1;
   PaymentTypeEnum payment_type = 2;
   string payment_date = 3;
-  float amount = 4;
+  double amount = 4;
   PaymentInfoInput payment_info = 5;
 }
 
@@ -30,7 +30,7 @@ message Payment {
   string client_id = 2;
   string payment_type = 3;
   string payment_date = 4;
-  float amount = 5;
+  double amount = 5;
   PaymentInfo payment_info = 6;
 }
 
