@@ -11,22 +11,22 @@ service Cards {
 
 message CreateCardRequest {
   string cardholder_name = 1;
-  bool isCredit = 2;
-  bool isDebit = 3;
+  bool is_credit = 2;
+  bool is_debit = 3;
 }
 
 message FullCard {
   string id = 1;
-  string cardholderName = 2;
+  string cardholder_name = 2;
   string number = 3;
   string cvv = 4;
   string token = 5;
-  string maskedNumber = 6; 
-  int64  expirationYear = 7;
-  int64  expirationMonth = 8;
+  string masked_number = 6; 
+  int64  expiration_year = 7;
+  int64  expiration_month = 8;
   bool   active = 9;
-  bool   isCredit = 10;
-  bool   isDebit = 11;
+  bool   is_credit = 10;
+  bool   is_debit = 11;
 }
 
 
@@ -36,12 +36,12 @@ message GetCardByTokenRequest {
 
 message Card {
   string id = 1;
-  string cardholderName = 2;
+  string cardholder_name = 2;
   string token = 3;
-  string maskedNumber = 4; 
-  int64  expirationYear = 5;
-  int64  expirationMonth = 6;
+  string masked_number = 4; 
+  int64  expiration_year = 5;
+  int64  expiration_month = 6;
   bool   active = 7;
-  bool   isCredit = 8;
-  bool   isDebit = 9;
+  bool   is_credit = 8;
+  bool   is_debit = 9;
 }

@@ -26,7 +26,7 @@ func (h *GRPCCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 		ClientId:    payment.ClientId,
 		PaymentType: pb.PaymentTypeEnum(pb.PaymentTypeEnum_value[payment.PaymentType]),
 		PaymentDate: payment.PaymentDate,
-		Amount:      float32(payment.Amount),
+		Amount:      payment.Amount,
 		PaymentInfo: &pb.PaymentInfoInput{
 			CardToken: payment.PaymentInfo.CardToken,
 		},
