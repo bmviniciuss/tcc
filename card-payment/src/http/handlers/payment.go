@@ -52,11 +52,15 @@ type PaymentInfoResponse struct {
 
 func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("ProcessPayment: Process started")
+
 		w.Header().Set("Content-Type", "application/json")
 
 		var cardPaymentRequest CardPaymentRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&cardPaymentRequest); err != nil {
+			log.Println("ProcessPayment: Error deconing body validation", err)
+
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -64,6 +68,7 @@ func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWr
 		validate := validator.New()
 
 		if err := validate.Struct(cardPaymentRequest); err != nil {
+			log.Println("ProcessPayment: Error in validation", err)
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"error":   true,
@@ -85,7 +90,6 @@ func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWr
 		payment, err := paymentService.Process(&input)
 
 		if err != nil {
-			log.Fatalln("ERRO AQUI: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"error":   true,

@@ -71,9 +71,9 @@ func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepo
 	}, nil
 }
 
-func (r *postgresCardRepository) GetByPan(pan string) (*card.Card, error) {
+func (r *postgresCardRepository) GetByToken(token string) (*card.Card, error) {
 	pgCard := PostgresCard{}
-	err := r.Db.Get(&pgCard, "select c.* from cardms.cards c where c.pan=$1 LIMIT 1", pan)
+	err := r.Db.Get(&pgCard, "select c.* from cardms.cards c where c.token=$1 LIMIT 1", token)
 
 	if err != nil {
 		return nil, err
