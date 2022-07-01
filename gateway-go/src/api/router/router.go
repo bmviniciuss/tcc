@@ -6,6 +6,7 @@ import (
 
 	grpccardservice "github.com/bmviniciuss/gateway/src/adapters/card/grpc"
 	httpcardservice "github.com/bmviniciuss/gateway/src/adapters/card/http"
+	grpccardpaymentservice "github.com/bmviniciuss/gateway/src/adapters/card_payment/grpc"
 	httpcardpaymentservice "github.com/bmviniciuss/gateway/src/adapters/card_payment/http"
 	"github.com/bmviniciuss/gateway/src/api/handler"
 	m "github.com/bmviniciuss/gateway/src/api/middleware"
@@ -50,7 +51,14 @@ func getCardService() card.Service {
 func getCardPaymentService() card_payment.Service {
 	if os.Getenv("GRPC_ENABLED") == "true" {
 		log.Println("Creating GRPCCardPaymentService")
-		log.Fatalln("Not implemented")
+		host := os.Getenv("CARD_PAYMENT_HOST")
+		grpcConn, err := grpc.Dial(host, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+		if err != nil {
+			log.Fatal("Error connecting to card gRPC server")
+		}
+
+		return grpccardpaymentservice.NewGRPCCardPaymentService(grpcConn)
 	}
 	log.Println("Creating HttpCardPaymentService")
 	return httpcardpaymentservice.NewHttpCardPaymentService()

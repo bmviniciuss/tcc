@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 
 	http_utils "github.com/bmviniciuss/gateway/src/api/utils"
@@ -64,15 +63,15 @@ func createCardPayment(cardPaymentService card_payment.Service) http.HandlerFunc
 		err := http_utils.DecodeRequestBodyToJson(r.Body, input)
 
 		if err != nil {
-			log.Println("Error while decoding create card payment request")
-			log.Println(err)
+			// log.Println("Error while decoding create card payment request")
+			// log.Println(err)
 			http_utils.SetErrorResponse(w, http.StatusInternalServerError, CreateCardPaymentServerInternalError)
 			return
 		}
 
 		if errs := input.Validate(); len(errs) > 0 {
-			log.Println("Validation error for request body")
-			log.Println(errs)
+			// log.Println("Validation error for request body")
+			// log.Println(errs)
 			http_utils.SetErrorResponse(w, http.StatusBadRequest, errs[0])
 			return
 		}
@@ -87,12 +86,10 @@ func createCardPayment(cardPaymentService card_payment.Service) http.HandlerFunc
 			},
 		}
 
-		log.Printf("%+v\n", payment)
-
 		err = cardPaymentService.CreatePayment(payment)
 		if err != nil {
-			log.Println("Error while calling create card payment service")
-			log.Println("Error: ", err)
+			// log.Println("Error while calling create card payment service")
+			// log.Println("Error: ", err)
 			http_utils.SetErrorResponse(w, http.StatusInternalServerError, CreateCardPaymentServerInternalError)
 			return
 		}
@@ -100,8 +97,8 @@ func createCardPayment(cardPaymentService card_payment.Service) http.HandlerFunc
 		w.WriteHeader(http.StatusCreated)
 
 		if err := json.NewEncoder(w).Encode(payment); err != nil {
-			log.Println("Error while enconding create card response")
-			log.Println(err)
+			// log.Println("Error while enconding create card response")
+			// log.Println(err)
 			http_utils.SetErrorResponse(w, http.StatusInternalServerError, CreateCardServerInternalError)
 		}
 	}

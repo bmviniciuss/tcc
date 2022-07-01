@@ -1,9 +1,12 @@
 package httpcardpayment
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/bmviniciuss/gateway/src/core/card_payment"
@@ -16,7 +19,7 @@ type HttpCardPaymentService struct {
 
 func NewHttpCardPaymentService() *HttpCardPaymentService {
 	return &HttpCardPaymentService{
-		Client: resty.New().SetTimeout(5 * time.Second),
+		Client: resty.New().SetTimeout(20 * time.Second),
 	}
 }
 
@@ -58,17 +61,23 @@ func (h *HttpCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 		},
 	}
 
-	log.Printf("Calling HTTP Card Payment Microsservice with %+v\n", b)
+	// log.Printf("Calling HTTP Card Payment Microsservice with %+v\n", b)
 
 	res, err := h.Client.R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Connection", "close").
-		SetResult(result).
 		SetBody(b).
-		Post("http://localhost:5002/api/payment")
+		Post(fmt.Sprintf("http://%s/api/payment", os.Getenv("CARD_PAYMENT_HOST")))
 
 	if err != nil {
 		log.Println("Error in request to process new card payment", err)
+		return errors.New("An error occur while creating the card payment")
+	}
+
+	err = json.Unmarshal(res.Body(), &result)
+
+	if err != nil {
+		log.Println("Error while parsing request body")
 		return errors.New("An error occur while creating the card payment")
 	}
 
@@ -77,9 +86,10 @@ func (h *HttpCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 		return errors.New("An error occur while creating the card payment")
 	}
 
-	log.Println("Card payment created")
+	// log.Println("Card payment created")
 	payment.Id = result.Id
 	payment.PaymentInfo.MaskedNumber = result.PaymentInfo.MaskedNumber
 
 	return nil
+
 }
