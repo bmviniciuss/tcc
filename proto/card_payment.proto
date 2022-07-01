@@ -9,11 +9,11 @@ service CardPayment {
 }
 
 message ProcessCardPaymentInput {
-  string clientId = 1;
-  PaymentTypeEnum paymentType = 2;
-  string paymentDate = 3;
+  string client_id = 1;
+  PaymentTypeEnum payment_type = 2;
+  string payment_date = 3;
   float amount = 4;
-  PaymentInfoInput paymentInfo = 5;
+  PaymentInfoInput payment_info = 5;
 }
 
 enum PaymentTypeEnum {
@@ -22,18 +22,18 @@ enum PaymentTypeEnum {
 }
 
 message PaymentInfoInput {
-  string cardToken = 1;
+  string card_token = 1;
 }
 
 message Payment {
   string id = 1;
-  string clientId = 2;
-  string paymentType = 3;
-  string paymentDate = 4;
+  string client_id = 2;
+  string payment_type = 3;
+  string payment_date = 4;
   float amount = 5;
-  PaymentInfo paymentInfo = 6;
+  PaymentInfo payment_info = 6;
 }
 
 message PaymentInfo {
-  string maskedNumber = 1;
+  string masked_number = 1;
 }
