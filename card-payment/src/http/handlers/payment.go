@@ -90,7 +90,6 @@ func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWr
 		payment, err := paymentService.Process(&input)
 
 		if err != nil {
-			log.Fatalln("ERRO AQUI: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"error":   true,
