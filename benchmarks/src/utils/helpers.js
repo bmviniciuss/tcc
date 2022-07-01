@@ -8,13 +8,12 @@ export function getNowTimestamp () {
 }
 
 export function getBenchmarkSummaryFileName (testName, isGRPC) {
-  const name = `src/${testName}/benchmarks`
   const mode = isGRPC ? 'grpc' : 'http'
-  return `${name}-${mode}.json`
+  const timestamp = getNowTimestamp()
+  return `src/${testName}/benchmarks/${timestamp}-${mode}.json`
 }
 
 export function generateData (testName, data) {
-  console.log('__ENV: ', JSON.stringify(__ENV, null, 2))
   const GENERATE_SUMMARY = __ENV.GENERATE_SUMMARY === 'true'
   if (!GENERATE_SUMMARY) {
     console.log('Not generating summary report for this benchmark')
