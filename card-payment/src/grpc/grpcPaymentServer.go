@@ -42,7 +42,7 @@ func (s *CardPaymentServer) ProccessCardPayment(ctx context.Context, in *pb.Proc
 	return &pb.Payment{
 		Id:          payment.Id,
 		ClientId:    payment.ClientId,
-		Amount:      float32(payment.Amount),
+		Amount:      payment.Amount,
 		PaymentType: payment.PaymentType,
 		PaymentDate: payment.PaymentDate.Format(time.RFC3339),
 		PaymentInfo: &pb.PaymentInfo{
