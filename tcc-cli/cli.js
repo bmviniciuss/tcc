@@ -4,7 +4,7 @@ const { Command } = require('commander')
 const program = new Command()
 const { getEnvFilePath, changeEnvForProject } = require('./lib')
 
-const PROJECTS_NAME = ['card', 'card-payment', 'client-wallet', 'gateway-go']
+const PROJECTS_NAME = ['card', 'card-payment', 'gateway-go']
 
 program
   .name('tcc-cli')
