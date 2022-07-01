@@ -128,9 +128,7 @@ func handleGetCard(cardService *card.CardService) func(rw http.ResponseWriter, r
 		presentationCard := parseCardToPresentationCard(card)
 
 		rw.WriteHeader(http.StatusOK)
-		json.NewEncoder(rw).Encode(map[string]interface{}{
-			"data": presentationCard,
-		})
+		json.NewEncoder(rw).Encode(presentationCard)
 	}
 }
 
