@@ -2,11 +2,8 @@ package card
 
 import (
 	"log"
-	"strings"
-	"time"
 
 	carddetails "github.com/bmviniciuss/tcc/card/src/core/cardDetails"
-	"github.com/bmviniciuss/tcc/card/src/core/encrypter"
 )
 
 type Card struct {
@@ -47,35 +44,16 @@ type GenerateCardRepoInput struct {
 	IsDebit         bool
 }
 
-type CardRepository interface {
-	Generate(generateCardDTO *GenerateCardRepoInput) (*Card, error)
-	GetByPan(pan string) (*Card, error)
-}
-
 type CardService struct {
 	cardDetailsGenerator carddetails.GeneratorService
-	encrypter            encrypter.Encrypter
 	cardRepository       CardRepository
 }
 
-func NewCardService(cardDetailsGenerator carddetails.GeneratorService, encrypter encrypter.Encrypter, repository CardRepository) *CardService {
+func NewCardService(cardDetailsGenerator carddetails.GeneratorService, repository CardRepository) *CardService {
 	return &CardService{
 		cardDetailsGenerator: cardDetailsGenerator,
-		encrypter:            encrypter,
 		cardRepository:       repository,
 	}
-}
-
-func maskPANNumber(pan string) string {
-	return pan[:4] + strings.Repeat("*", len(pan)-8) + pan[len(pan)-4:]
-}
-
-func getCardExpiration() (int, int) {
-	EXPIRATION_STEP_YEARS := 5 // in years
-	now := time.Now()
-	year := now.Year() + EXPIRATION_STEP_YEARS
-	month := int(now.Month())
-	return year, month
 }
 
 func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInput) (*Card, error) {
@@ -91,7 +69,7 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 	log.Println("[CardService] Generating card expiration")
 	year, month := getCardExpiration()
 	log.Println("[CardService] Masking card PAN")
-	MaskedNumber := maskPANNumber(cardDetails.Number)
+	MaskedNumber := MaskPANNumber(cardDetails.Number)
 
 	generateCardInput := &GenerateCardRepoInput{
 		Number:          cardDetails.Number,
@@ -103,17 +81,8 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 		ExpirationMonth: month,
 		IsCredit:        generateCardServiceInput.IsCredit,
 		IsDebit:         generateCardServiceInput.IsDebit,
+		Token:           generateToken(),
 	}
-
-	log.Println("[CardService] Encrypting card number")
-	enctypedCardNumber, err := s.encrypter.Encrypt([]byte(cardDetails.Number))
-
-	if err != nil {
-		log.Println("[CardService] Error encrypting card number", err)
-		return nil, err
-	}
-
-	generateCardInput.Token = string(enctypedCardNumber)
 
 	log.Println("[CardService] Saving card")
 	card, err := s.cardRepository.Generate(generateCardInput)
@@ -123,28 +92,17 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 		return nil, err
 	}
 
-	log.Println("[CardService] Card saved")
 	return card, nil
 }
 
 func (s *CardService) GetByToken(token string) (*Card, error) {
 	log.Println("[CardService] Getting card by token")
-	log.Println("[CardService] Decrypting card number")
-	pan, err := s.encrypter.Decrypt([]byte(token))
+	card, err := s.cardRepository.GetByToken(token)
 
 	if err != nil {
-		log.Println("[CardService] Error decrypting card number", err)
+		log.Println("[CardService] Error getting card by Token", err)
 		return nil, err
 	}
 
-	log.Println("[CardService] Getting card by PAN")
-	card, err := s.cardRepository.GetByPan(string(pan))
-
-	if err != nil {
-		log.Println("[CardService] Error getting card by PAN", err)
-		return nil, err
-	}
-
-	log.Println("[CardService] Card found")
 	return card, nil
 }

@@ -3,10 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 
 	http_utils "github.com/bmviniciuss/gateway/src/api/utils"
+	"github.com/bmviniciuss/gateway/src/core/card_payment"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -14,8 +14,8 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
-func MakePaymentHandlers(r chi.Router) {
-	r.Post("/card", createCardPayment())
+func MakePaymentHandlers(r chi.Router, cardPaymentService card_payment.Service) {
+	r.Post("/card", createCardPayment(cardPaymentService))
 }
 
 type CreateCardPaymentRequest struct {
@@ -56,31 +56,49 @@ var (
 	CreateCardPaymentServerInternalError = errors.New("Internal server error while creating card")
 )
 
-func createCardPayment() http.HandlerFunc {
+func createCardPayment(cardPaymentService card_payment.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		input := &CreateCardPaymentRequest{}
 
 		err := http_utils.DecodeRequestBodyToJson(r.Body, input)
 
 		if err != nil {
-			log.Println("Error while decoding create card payment request")
-			log.Println(err)
+			// log.Println("Error while decoding create card payment request")
+			// log.Println(err)
 			http_utils.SetErrorResponse(w, http.StatusInternalServerError, CreateCardPaymentServerInternalError)
 			return
 		}
 
 		if errs := input.Validate(); len(errs) > 0 {
-			log.Println("Validation error for request body")
-			log.Println(errs)
-			http_utils.SetErrorResponse(w, http.StatusInternalServerError, errs[0])
+			// log.Println("Validation error for request body")
+			// log.Println(errs)
+			http_utils.SetErrorResponse(w, http.StatusBadRequest, errs[0])
+			return
+		}
+
+		payment := &card_payment.CardPayment{
+			ClientId:    input.ClientId,
+			Amount:      input.Amount,
+			PaymentType: input.PaymentType,
+			PaymentDate: input.PaymentDate,
+			PaymentInfo: card_payment.CardPaymentInfo{
+				CardToken: input.PaymentInfo.CardToken,
+			},
+		}
+
+		err = cardPaymentService.CreatePayment(payment)
+		if err != nil {
+			// log.Println("Error while calling create card payment service")
+			// log.Println("Error: ", err)
+			http_utils.SetErrorResponse(w, http.StatusInternalServerError, CreateCardPaymentServerInternalError)
 			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
 
-		if err := json.NewEncoder(w).Encode(input); err != nil {
-			log.Println("Error while enconding create card response")
-			log.Println(err)
+		if err := json.NewEncoder(w).Encode(payment); err != nil {
+			// log.Println("Error while enconding create card response")
+			// log.Println(err)
 			http_utils.SetErrorResponse(w, http.StatusInternalServerError, CreateCardServerInternalError)
 		}
 	}
