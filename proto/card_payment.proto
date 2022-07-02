@@ -6,6 +6,7 @@ package cardpayment;
 
 service CardPayment {
   rpc ProccessCardPayment(ProcessCardPaymentInput) returns (Payment) {}
+  rpc GetPaymentsByClientId(GetPaymentsByClientIdRequest) returns (PaymentsResults) {}
 }
 
 message ProcessCardPaymentInput {
@@ -36,4 +37,12 @@ message Payment {
 
 message PaymentInfo {
   string masked_number = 1;
+}
+
+message GetPaymentsByClientIdRequest {
+  string client_id = 1;
+}
+
+message PaymentsResults {
+  repeated Payment content = 1;
 }
