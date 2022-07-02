@@ -166,7 +166,7 @@ func handleGetPaymentsByClientId(paymentService payment.Service) func(w http.Res
 			Content: presentationPayments,
 		}
 
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(res)
 	}
 }
