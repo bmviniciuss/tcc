@@ -22,6 +22,7 @@ func NewPaymentController(paymentService payment.Service) PaymentController {
 }
 
 func (p PaymentController) Route(r chi.Router) {
+	r.Get("/", handleGetPaymentsByClientId(p.PaymentService))
 	r.Post("/", handleProcessPayment(p.PaymentService))
 }
 
@@ -111,5 +112,61 @@ func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWr
 
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(cardPaymentResponse)
+	}
+}
+
+type GetPaymentsByClientIdReponse struct {
+	Content []CardPaymentResponse `json:"content"`
+}
+
+func handleGetPaymentsByClientId(paymentService payment.Service) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("GetPaymentsByClientId: Process started")
+		w.Header().Set("Content-Type", "application/json")
+
+		clientId := r.URL.Query().Get("client_id")
+
+		if clientId == "" {
+			log.Println("GetPaymentsByClientId: no client_id was provided")
+			http.Error(w, "You must provide 'client_id' in the request's url", http.StatusBadRequest)
+			return
+		}
+
+		filters := &payment.GetPaymentsByClientIdInput{
+			ClientId: clientId,
+		}
+
+		payments, err := paymentService.GetPaymentsByClientId(filters)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		presentationPayments := []CardPaymentResponse{}
+
+		for _, payment := range payments {
+			p := CardPaymentResponse{
+				Id:          payment.Id,
+				ClientId:    payment.ClientId,
+				Amount:      payment.Amount,
+				PaymentType: payment.PaymentType,
+				PaymentDate: payment.PaymentDate,
+				PaymentInfo: PaymentInfoResponse{
+					MaskedNumber: payment.PaymentInfo.MaskedNumber,
+				},
+			}
+			presentationPayments = append(presentationPayments, p)
+		}
+
+		res := GetPaymentsByClientIdReponse{
+			Content: presentationPayments,
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(res)
 	}
 }
