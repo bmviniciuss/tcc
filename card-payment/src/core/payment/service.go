@@ -12,12 +12,16 @@ type ProcessPaymentInput struct {
 	PaymentInfo PaymentInfoInput
 }
 
+type GetPaymentsByClientIdInput struct {
+	ClientId string
+}
 type PaymentInfoInput struct {
 	CardToken string
 }
 
 type Service interface {
 	Process(input *ProcessPaymentInput) (*Payment, error)
+	GetPaymentsByClientId(input *GetPaymentsByClientIdInput) ([]Payment, error)
 }
 
 type CardAPI interface {
@@ -86,4 +90,8 @@ func getPaymentFeeByPaymentType(paymentType string) float64 {
 		return CREDIT_CARD_FEE
 	}
 	return DEBIT_CARD_FEE
+}
+
+func (s *PaymentService) GetPaymentsByClientId(input *GetPaymentsByClientIdInput) ([]Payment, error) {
+	return s.PaymentRepository.GetPaymentsByClientId(input)
 }
