@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CardPaymentClient interface {
 	ProccessCardPayment(ctx context.Context, in *ProcessCardPaymentInput, opts ...grpc.CallOption) (*Payment, error)
+	GetPaymentsByClientId(ctx context.Context, in *GetPaymentsByClientIdRequest, opts ...grpc.CallOption) (*PaymentsResults, error)
 }
 
 type cardPaymentClient struct {
@@ -42,11 +43,21 @@ func (c *cardPaymentClient) ProccessCardPayment(ctx context.Context, in *Process
 	return out, nil
 }
 
+func (c *cardPaymentClient) GetPaymentsByClientId(ctx context.Context, in *GetPaymentsByClientIdRequest, opts ...grpc.CallOption) (*PaymentsResults, error) {
+	out := new(PaymentsResults)
+	err := c.cc.Invoke(ctx, "/cardpayment.CardPayment/GetPaymentsByClientId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CardPaymentServer is the server API for CardPayment service.
 // All implementations must embed UnimplementedCardPaymentServer
 // for forward compatibility
 type CardPaymentServer interface {
 	ProccessCardPayment(context.Context, *ProcessCardPaymentInput) (*Payment, error)
+	GetPaymentsByClientId(context.Context, *GetPaymentsByClientIdRequest) (*PaymentsResults, error)
 	mustEmbedUnimplementedCardPaymentServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedCardPaymentServer struct {
 
 func (UnimplementedCardPaymentServer) ProccessCardPayment(context.Context, *ProcessCardPaymentInput) (*Payment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProccessCardPayment not implemented")
+}
+func (UnimplementedCardPaymentServer) GetPaymentsByClientId(context.Context, *GetPaymentsByClientIdRequest) (*PaymentsResults, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentsByClientId not implemented")
 }
 func (UnimplementedCardPaymentServer) mustEmbedUnimplementedCardPaymentServer() {}
 
@@ -88,6 +102,24 @@ func _CardPayment_ProccessCardPayment_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CardPayment_GetPaymentsByClientId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPaymentsByClientIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CardPaymentServer).GetPaymentsByClientId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cardpayment.CardPayment/GetPaymentsByClientId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CardPaymentServer).GetPaymentsByClientId(ctx, req.(*GetPaymentsByClientIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CardPayment_ServiceDesc is the grpc.ServiceDesc for CardPayment service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var CardPayment_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProccessCardPayment",
 			Handler:    _CardPayment_ProccessCardPayment_Handler,
+		},
+		{
+			MethodName: "GetPaymentsByClientId",
+			Handler:    _CardPayment_GetPaymentsByClientId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

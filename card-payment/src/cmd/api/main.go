@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"net"
 	"net/http"
 	"os"
@@ -41,6 +42,8 @@ func main() {
 }
 
 func runGrpc(db *sqlx.DB, appPort string) {
+	log.Println("MAX: ", math.MaxInt32)
+
 	gs := grpc.NewServer()
 	paymentService := factories.NewPaymentService(db)
 	pb.RegisterCardPaymentServer(gs, grpcpaymentserver.NewCardPaymentServer(paymentService))

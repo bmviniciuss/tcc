@@ -1,6 +1,7 @@
 package postgrespaymentrepository
 
 import (
+	"log"
 	"time"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
@@ -14,7 +15,7 @@ type Payment struct {
 	Amount         float64   `db:"amount"`
 	CardholderName string    `db:"cardholder_name"`
 	CardToken      string    `db:"card_token"`
-	MaskedNumber   string    `db:"card_masked_number"`
+	MaskedNumber   string    `db:"masked_number"`
 	PaymentDate    time.Time `db:"payment_date"`
 	CreatedAt      time.Time `db:"created_at"`
 }
@@ -102,4 +103,31 @@ func createPayable(tx *sqlx.Tx, payment *payment.Payment) error {
 	}
 
 	return nil
+}
+
+func (r *postgresPaymentRepository) GetPaymentsByClientId(input *payment.GetPaymentsByClientIdInput) ([]payment.Payment, error) {
+	log.Println("PostgresRepo.GetPaymentsByClientId: Process started: ", input.ClientId)
+	pp := []Payment{}
+	res := []payment.Payment{}
+	err := r.Db.Select(&pp, "SELECT * FROM cardpaymentms.payments WHERE client_id=$1", input.ClientId)
+
+	if err != nil {
+		log.Println("PostgresRepo.GetPaymentsByClientId: Error in query", err)
+		return res, err // TODO: use generic error in the future
+	}
+
+	for _, p := range pp {
+		res = append(res, payment.Payment{
+			Id:          p.Id,
+			ClientId:    p.ClientId,
+			Amount:      p.Amount,
+			PaymentType: p.PaymentType,
+			PaymentInfo: payment.PaymentInfo{
+				MaskedNumber: p.MaskedNumber,
+			},
+			PaymentDate: p.PaymentDate,
+		})
+	}
+
+	return res, nil
 }
