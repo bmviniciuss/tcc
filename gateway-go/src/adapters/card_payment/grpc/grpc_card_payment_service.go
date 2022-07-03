@@ -43,3 +43,33 @@ func (h *GRPCCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 	payment.PaymentInfo.MaskedNumber = resp.GetPaymentInfo().GetMaskedNumber()
 	return nil
 }
+
+func (h *GRPCCardPaymentService) GetPaymentsByClientId(clientId string) (*card_payment.CardPaymentsResponse, error) {
+	log.Println("[GRPCCardPaymentService.GetPaymentsByClientId]: Process started")
+	result := &card_payment.CardPaymentsResponse{}
+	input := &pb.GetPaymentsByClientIdRequest{
+		ClientId: clientId,
+	}
+
+	res, err := h.Client.GetPaymentsByClientId(context.Background(), input)
+
+	if err != nil {
+		log.Println("[gRPCCardPaymentService.GetPaymentsByClientId] Error:", err)
+		return result, err
+	}
+
+	for _, p := range res.Content {
+		result.Content = append(result.Content, card_payment.CardPayment{
+			Id:          p.GetId(),
+			ClientId:    p.GetClientId(),
+			Amount:      p.GetAmount(),
+			PaymentType: p.GetPaymentType(),
+			PaymentDate: p.GetPaymentDate(),
+			PaymentInfo: card_payment.CardPaymentInfo{
+				MaskedNumber: p.GetPaymentInfo().GetMaskedNumber(),
+			},
+		})
+	}
+
+	return result, nil
+}
