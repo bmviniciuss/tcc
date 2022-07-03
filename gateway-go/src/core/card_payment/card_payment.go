@@ -14,6 +14,11 @@ type CardPaymentInfo struct {
 	CardToken    string `json:"-"`
 }
 
+type CardPaymentsResponse struct {
+	Content []CardPayment `json:"content"`
+}
+
 type Service interface {
 	CreatePayment(payment *CardPayment) error
+	GetPaymentsByClientId(clientId string) (*CardPaymentsResponse, error)
 }

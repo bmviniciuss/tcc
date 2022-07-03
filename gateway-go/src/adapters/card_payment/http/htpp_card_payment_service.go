@@ -61,8 +61,6 @@ func (h *HttpCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 		},
 	}
 
-	// log.Printf("Calling HTTP Card Payment Microsservice with %+v\n", b)
-
 	res, err := h.Client.R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Connection", "close").
@@ -92,4 +90,46 @@ func (h *HttpCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 
 	return nil
 
+}
+
+type GetPaymentsByClientResults struct {
+	Content []CardPaymentResult `json:"content"`
+}
+
+func (h *HttpCardPaymentService) GetPaymentsByClientId(clientId string) (*card_payment.CardPaymentsResponse, error) {
+	callRes := GetPaymentsByClientResults{}
+	coreResult := &card_payment.CardPaymentsResponse{}
+
+	res, err := h.Client.R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Connection", "close").
+		SetQueryParam("client_id", clientId).
+		Get(fmt.Sprintf("http://%s/api/payment", os.Getenv("CARD_PAYMENT_HOST")))
+
+	if err != nil {
+		log.Println("Error in request to get payments", err)
+		return coreResult, errors.New("An error occur while fetching card payments")
+	}
+
+	err = json.Unmarshal(res.Body(), &callRes)
+
+	if err != nil {
+		log.Println("Error while parsing request body")
+		return coreResult, errors.New("An error occur while fecthing for clients payments")
+	}
+
+	for _, p := range callRes.Content {
+		coreResult.Content = append(coreResult.Content, card_payment.CardPayment{
+			Id:          p.Id,
+			ClientId:    p.ClientId,
+			Amount:      p.Amount,
+			PaymentType: p.PaymentType,
+			PaymentDate: p.PaymentDate,
+			PaymentInfo: card_payment.CardPaymentInfo{
+				MaskedNumber: p.PaymentInfo.MaskedNumber,
+			},
+		})
+	}
+
+	return coreResult, nil
 }

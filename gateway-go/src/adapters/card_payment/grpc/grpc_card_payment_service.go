@@ -2,6 +2,7 @@ package grpccardpayment
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/bmviniciuss/gateway/src/core/card_payment"
@@ -42,4 +43,8 @@ func (h *GRPCCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 	payment.Id = resp.GetId()
 	payment.PaymentInfo.MaskedNumber = resp.GetPaymentInfo().GetMaskedNumber()
 	return nil
+}
+
+func (h *GRPCCardPaymentService) GetPaymentsByClientId(clientId string) (*card_payment.CardPaymentsResponse, error) {
+	return &card_payment.CardPaymentsResponse{}, errors.New("Not implemented")
 }
