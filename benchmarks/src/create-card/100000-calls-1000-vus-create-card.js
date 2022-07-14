@@ -4,6 +4,11 @@ import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/src/utils/h
 
 const GATEWAY_HOST = 'localhost:5000'
 
+export const options = {
+  vus: 1000,
+  iterations: 100000
+}
+
 export default function () {
   const url = `http://${GATEWAY_HOST}/api/cards`
   const payload = JSON.stringify({
@@ -25,5 +30,5 @@ export default function () {
 }
 
 export function handleSummary (data) {
-  return generateData('create-card', data)
+  return generateData('100000calls-1000vus-create-card', data)
 }
