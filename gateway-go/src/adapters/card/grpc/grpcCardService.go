@@ -3,19 +3,28 @@ package grpccardService
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/bmviniciuss/gateway/src/core/card"
 	"github.com/bmviniciuss/gateway/src/grpc/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCardAPI struct {
 	Conn *grpc.ClientConn
 }
 
-func NewGRPCardAPI(Conn *grpc.ClientConn) *GRPCardAPI {
+func NewGRPCardAPI() *GRPCardAPI {
+	host := os.Getenv("CARD_HOST")
+	grpcConn, err := grpc.Dial(host, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	if err != nil {
+		log.Fatal("Error connecting to card gRPC server")
+	}
+
 	return &GRPCardAPI{
-		Conn: Conn,
+		Conn: grpcConn,
 	}
 }
 

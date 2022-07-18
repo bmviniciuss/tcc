@@ -35,13 +35,7 @@ func GetRouter() *chi.Mux {
 func getCardService() card.Service {
 	if os.Getenv("GRPC_ENABLED") == "true" {
 		log.Println("Creating a gRPC card API")
-		host := os.Getenv("CARD_HOST")
-		grpcConn, err := grpc.Dial(host, grpc.WithTransportCredentials(insecure.NewCredentials()))
-
-		if err != nil {
-			log.Fatal("Error connecting to card gRPC server")
-		}
-		return grpccardservice.NewGRPCardAPI(grpcConn)
+		return grpccardservice.NewGRPCardAPI()
 	}
 
 	log.Println("Creating a HTTP card API")

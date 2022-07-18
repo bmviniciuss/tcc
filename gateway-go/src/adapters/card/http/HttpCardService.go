@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"time"
 
 	"github.com/bmviniciuss/gateway/src/core/card"
 	"github.com/go-resty/resty/v2"
@@ -16,7 +15,7 @@ type HttpCardService struct {
 
 func NewHttpCardService() *HttpCardService {
 	return &HttpCardService{
-		Client: resty.New().SetTimeout(5 * time.Second),
+		Client: resty.New(),
 	}
 }
 

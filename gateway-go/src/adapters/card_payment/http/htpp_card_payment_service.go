@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/bmviniciuss/gateway/src/core/card_payment"
 	"github.com/go-resty/resty/v2"
@@ -19,7 +18,7 @@ type HttpCardPaymentService struct {
 
 func NewHttpCardPaymentService() *HttpCardPaymentService {
 	return &HttpCardPaymentService{
-		Client: resty.New().SetTimeout(20 * time.Second),
+		Client: resty.New(),
 	}
 }
 
