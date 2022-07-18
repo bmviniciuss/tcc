@@ -12,19 +12,23 @@ export function getNowTimestamp () {
 export function getBenchmarkSummaryFileName (testName, isGRPC) {
   const mode = isGRPC ? 'grpc' : 'http'
   const timestamp = getNowTimestamp()
-  return `src/results/${testName}-${timestamp}-${mode}.json`
+  return `src/results/${timestamp}-${testName}-${mode}.json`
 }
 
 export function generateData (testName, data) {
   const GENERATE_SUMMARY = __ENV.GENERATE_SUMMARY === 'true'
-  if (!GENERATE_SUMMARY) {
-    console.log('Not generating summary report for this benchmark')
-    return {}
-  }
-
   const IS_GRPC = __ENV.GRPC_ENABLED === 'true'
   const type = IS_GRPC ? 'gRPC' : 'REST'
+
+  if (!GENERATE_SUMMARY) {
+    console.log('Not generating summary report for this benchmark')
+    return {
+      stdout: textSummary(data, { indent: ' ', enableColors: true })
+    }
+  }
+
   const summaryOutputFileName = getBenchmarkSummaryFileName(testName, IS_GRPC)
+
   data.metadata = { testName, type }
   return {
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
