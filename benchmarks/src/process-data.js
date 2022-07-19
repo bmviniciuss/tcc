@@ -40,7 +40,7 @@ async function main () {
       key: 'metrics.http_reqs.values.count'
     },
     httpReqsRate: {
-      header: 'http_reqs_count',
+      header: 'http_reqs_rate',
       key: 'metrics.http_reqs.values.rate'
     },
     httpReqDurationMin: {
@@ -48,11 +48,11 @@ async function main () {
       key: 'metrics.http_req_duration.values.min'
     },
     httpReqDurationMax: {
-      header: 'http_req_duration_min',
+      header: 'http_req_duration_max',
       key: 'metrics.http_req_duration.values.max'
     },
     httpReqDurationAvg: {
-      header: 'http_req_duration_min',
+      header: 'http_req_duration_avg',
       key: 'metrics.http_req_duration.values.avg'
     }
   }
