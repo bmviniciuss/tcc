@@ -24,35 +24,35 @@ async function main () {
 
   const fields = {
     testName: {
-      header: 'test_name',
+      header: 'Teste',
       key: 'metadata.testName'
     },
     type: {
-      header: 'type',
+      header: 'Tipo',
       key: 'metadata.type'
     },
     testDurationMs: {
-      header: 'test_duration_ms',
+      header: 'Duração Teste (ms)',
       key: 'state.testRunDurationMs'
     },
     httpReqsCount: {
-      header: 'http_reqs_count',
+      header: 'Número Requisições',
       key: 'metrics.http_reqs.values.count'
     },
     httpReqsRate: {
-      header: 'http_reqs_rate',
+      header: 'Vazão  (reqs/s)',
       key: 'metrics.http_reqs.values.rate'
     },
     httpReqDurationMin: {
-      header: 'http_req_duration_min',
+      header: 'Tempo requisição (min)',
       key: 'metrics.http_req_duration.values.min'
     },
     httpReqDurationMax: {
-      header: 'http_req_duration_max',
+      header: 'Tempo requisição (max)',
       key: 'metrics.http_req_duration.values.max'
     },
     httpReqDurationAvg: {
-      header: 'http_req_duration_avg',
+      header: 'Tempo requisição (média)',
       key: 'metrics.http_req_duration.values.avg'
     }
   }

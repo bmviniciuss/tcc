@@ -1,4 +1,4 @@
-test_name;type;test_duration_ms;http_reqs_count;http_reqs_rate;http_req_duration_min;http_req_duration_max;http_req_duration_avg
+Teste;Tipo;Duração Teste (ms);Número Requisições;Vazão  (reqs/s);Tempo requisição (min);Tempo requisição (max);Tempo requisição (média)
 1000-vus-1m-create-card;gRPC;60124.072901;366040;6088.077243248635;0.902745;2369.434106;163.5144173099533
 1000-vus-1m-create-card;REST;60118.20023;286758;4769.903272269001;1.308075;2627.063112;208.55555502271432
 100000calls-1000vus-create-card;gRPC;14176.739629;100000;7053.8080416910225;0.914604;960.873761;137.85281111364955
