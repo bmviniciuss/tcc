@@ -1,8 +1,10 @@
 package postgrescardrepository
 
 import (
+	"context"
+
 	"github.com/bmviniciuss/tcc/card/src/core/card"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type PostgresCard struct {
@@ -24,72 +26,50 @@ func (PostgresCard) TableName() string {
 }
 
 type postgresCardRepository struct {
-	Db sqlx.DB
+	Db pgxpool.Pool
 }
 
-func NewPostgresCardRepository(db *sqlx.DB) *postgresCardRepository {
+func NewPostgresCardRepository(db *pgxpool.Pool) *postgresCardRepository {
 	return &postgresCardRepository{
 		Db: *db,
 	}
 }
 
-func (r *postgresCardRepository) Generate(generateCardDTO *card.GenerateCardRepoInput) (*card.Card, error) {
+func (r *postgresCardRepository) Generate(card *card.Card) error {
 	var id string
 
-	pgCard := &PostgresCard{
-		Number:          generateCardDTO.Number,
-		Cvv:             generateCardDTO.Cvv,
-		CardholderName:  generateCardDTO.CardholderName,
-		Token:           generateCardDTO.Token,
-		MaskedNumber:    generateCardDTO.MaskedNumber,
-		ExpirationYear:  generateCardDTO.ExpirationYear,
-		ExpirationMonth: generateCardDTO.ExpirationMonth,
-		Active:          &generateCardDTO.Active,
-		IsCredit:        &generateCardDTO.IsCredit,
-		IsDebit:         &generateCardDTO.IsDebit,
-	}
-
 	insertSQL := "INSERT INTO cardms.cards (id, pan, masked_pan, cvv, cardholder_name, \"token\", expiration_year, expiration_month, active, is_debit, is_credit) VALUES(uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
-	err := r.Db.QueryRow(insertSQL, pgCard.Number, pgCard.MaskedNumber, pgCard.Cvv, pgCard.CardholderName, pgCard.Token, pgCard.ExpirationYear, pgCard.ExpirationMonth, pgCard.Active, pgCard.IsDebit, pgCard.IsCredit).Scan(&id)
+	err := r.Db.QueryRow(context.Background(), insertSQL, card.Number, card.MaskedNumber, card.Cvv, card.CardholderName, card.Token, card.ExpirationYear, card.ExpirationMonth, card.Active, card.IsDebit, card.IsCredit).Scan(&id)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &card.Card{
-		Id:              id,
-		Number:          pgCard.Number,
-		Cvv:             pgCard.Cvv,
-		CardholderName:  pgCard.CardholderName,
-		Token:           pgCard.Token,
-		MaskedNumber:    pgCard.MaskedNumber,
-		ExpirationYear:  pgCard.ExpirationYear,
-		ExpirationMonth: pgCard.ExpirationMonth,
-		Active:          *pgCard.Active,
-		IsCredit:        *pgCard.IsCredit,
-		IsDebit:         *pgCard.IsDebit,
-	}, nil
+	card.Id = id
+
+	return nil
 }
 
 func (r *postgresCardRepository) GetByToken(token string) (*card.Card, error) {
-	pgCard := PostgresCard{}
-	err := r.Db.Get(&pgCard, "select c.* from cardms.cards c where c.token=$1 LIMIT 1", token)
+	// pgCard := PostgresCard{}
+	return nil, nil
+	// err := r.Db.Get(&pgCard, "select c.* from cardms.cards c where c.token=$1 LIMIT 1", token)
 
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	return &card.Card{
-		Id:              pgCard.Id,
-		Number:          pgCard.Number,
-		Cvv:             pgCard.Cvv,
-		CardholderName:  pgCard.CardholderName,
-		Token:           pgCard.Token,
-		MaskedNumber:    pgCard.MaskedNumber,
-		ExpirationYear:  pgCard.ExpirationYear,
-		ExpirationMonth: pgCard.ExpirationMonth,
-		Active:          *pgCard.Active,
-		IsCredit:        *pgCard.IsCredit,
-		IsDebit:         *pgCard.IsDebit,
-	}, nil
+	// return &card.Card{
+	// 	Id:              pgCard.Id,
+	// 	Number:          pgCard.Number,
+	// 	Cvv:             pgCard.Cvv,
+	// 	CardholderName:  pgCard.CardholderName,
+	// 	Token:           pgCard.Token,
+	// 	MaskedNumber:    pgCard.MaskedNumber,
+	// 	ExpirationYear:  pgCard.ExpirationYear,
+	// 	ExpirationMonth: pgCard.ExpirationMonth,
+	// 	Active:          *pgCard.Active,
+	// 	IsCredit:        *pgCard.IsCredit,
+	// 	IsDebit:         *pgCard.IsDebit,
+	// }, nil
 }

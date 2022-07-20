@@ -1,6 +1,6 @@
 package card
 
 type CardRepository interface {
-	Generate(generateCardDTO *GenerateCardRepoInput) (*Card, error)
+	Generate(card *Card) error
 	GetByToken(token string) (*Card, error)
 }

@@ -3,7 +3,9 @@ package httpcardservice
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/bmviniciuss/gateway/src/core/card"
 	"github.com/go-resty/resty/v2"
@@ -70,14 +72,14 @@ func (s *HttpCardService) CreateCard(input *card.CreateCardRequest) (*card.Prese
 	// 	log.Println("[HTTPCardService] error: ", err)
 	// 	return nil, errors.New("Unable to create card")
 	// }
-
+	host := os.Getenv("CARD_HOST")
 	result := &CardResponse{}
 	response, err := s.Client.R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Connection", "close").
 		SetBody(body).
 		// SetResult(result).
-		Post("http://localhost:5001/api/cards")
+		Post(fmt.Sprintf("http://%s/api/cards", host))
 
 	if err != nil {
 		log.Println("[HTTPCardService] Error while making request to crete a new card")

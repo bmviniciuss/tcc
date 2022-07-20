@@ -8,10 +8,10 @@ import (
 	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
 	"github.com/bmviniciuss/tcc/card/src/core/card"
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func newCardService(db *sqlx.DB) *card.CardService {
+func newCardService(db *pgxpool.Pool) *card.CardService {
 	cardRepository := postgrescardrepository.NewPostgresCardRepository(db)
 	cardDetailsGenerator := carddetailsgenerator.NewCardDetailsGenerator()
 	cardService := card.NewCardService(cardDetailsGenerator, cardRepository)
@@ -23,7 +23,7 @@ type CardServiceServer struct {
 	CardService *card.CardService
 }
 
-func NewCardServiceServer(db *sqlx.DB) *CardServiceServer {
+func NewCardServiceServer(db *pgxpool.Pool) *CardServiceServer {
 	cardService := newCardService(db)
 	return &CardServiceServer{
 		CardService: cardService,
@@ -39,7 +39,6 @@ func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardR
 		IsDebit:        in.GetIsDebit(),
 	}
 
-	log.Println("[gRPC] Calling card service to generate card")
 	card, err := s.CardService.Generate(&input)
 
 	if err != nil {

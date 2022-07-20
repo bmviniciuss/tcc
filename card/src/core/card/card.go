@@ -56,9 +56,8 @@ func NewCardService(cardDetailsGenerator carddetails.GeneratorService, repositor
 	}
 }
 
-func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInput) (*Card, error) {
+func (s *CardService) Generate(generateCardDTO *GenerateCardServiceInput) (*Card, error) {
 	log.Println("[CardService] Generating card")
-	log.Println("[CardService] Generating card details")
 	cardDetails, err := s.cardDetailsGenerator.Generate()
 
 	if err != nil {
@@ -66,26 +65,23 @@ func (s *CardService) Generate(generateCardServiceInput *GenerateCardServiceInpu
 		return nil, err
 	}
 
-	log.Println("[CardService] Generating card expiration")
 	year, month := getCardExpiration()
-	log.Println("[CardService] Masking card PAN")
 	MaskedNumber := MaskPANNumber(cardDetails.Number)
 
-	generateCardInput := &GenerateCardRepoInput{
+	card := &Card{
 		Number:          cardDetails.Number,
 		Cvv:             cardDetails.Cvv,
-		CardholderName:  generateCardServiceInput.CardholderName,
+		CardholderName:  generateCardDTO.CardholderName,
+		Token:           generateToken(),
 		MaskedNumber:    MaskedNumber,
-		Active:          true,
 		ExpirationYear:  year,
 		ExpirationMonth: month,
-		IsCredit:        generateCardServiceInput.IsCredit,
-		IsDebit:         generateCardServiceInput.IsDebit,
-		Token:           generateToken(),
+		Active:          true,
+		IsCredit:        generateCardDTO.IsCredit,
+		IsDebit:         generateCardDTO.IsDebit,
 	}
 
-	log.Println("[CardService] Saving card")
-	card, err := s.cardRepository.Generate(generateCardInput)
+	err = s.cardRepository.Generate(card)
 
 	if err != nil {
 		log.Println("[CardService] Error saving card", err)
