@@ -38,10 +38,10 @@ model Result {
   iterationDurationAvg Float @db.Double
   iterationDurationMed Float @db.Double
 
-  iterationsCount BigInt @db.UnsignedBigInt
+  iterationsCount Int @db.UnsignedInt
   iterationsRate  Float  @db.Double
 
-  httpReqsCount BigInt @db.UnsignedBigInt
+  httpReqsCount Int @db.UnsignedInt
   httpReqsRate  Float  @db.Double
 
   executedAt DateTime @default(now())
