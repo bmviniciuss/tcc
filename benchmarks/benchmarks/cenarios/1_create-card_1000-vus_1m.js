@@ -2,14 +2,19 @@ import http from 'k6/http'
 import { check } from 'k6'
 import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
-const TEST_ID = ""
+const testConfig = {
+  id: "6623f5bc-fa13-464c-ac10-ffc0f564fc05",
+  name: "create-card",
+  vus: 1000,
+  duration: '1m',
+  executedAt: new Date().toISOString()
+}
+
 const GATEWAY_HOST = 'localhost:5000'
-const VUS = 1000
-const DURATION = '2s'
 
 export const options = {
-  vus: VUS,
-  duration: DURATION
+  vus: testConfig.vus,
+  duration: testConfig.duration
 }
 
 export default function () {
@@ -33,5 +38,5 @@ export default function () {
 }
 
 export function handleSummary (data) {
-  return generateData(`${VUS}-vus-${DURATION}-create-card`, data)
+  return generateData(`${testConfig.vus}-vus-${testConfig.duration}-${testConfig.name}`, testConfig, data)
 }
