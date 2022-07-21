@@ -20,6 +20,8 @@ model Benchmark {
   iterations Int?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  Results Result[]
 }
 
 model Result {
@@ -45,4 +47,7 @@ model Result {
   executedAt DateTime @default(now())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  benchmark Benchmark @relation(fields: [benchmarkId], references: [id])
+  benchmarkId String
 }
