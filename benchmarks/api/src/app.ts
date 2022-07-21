@@ -3,6 +3,7 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 
 import prismaPlugin from './plugins/prisma'
+import ResultSchema from './schemas/Result'
 
 const fastify = Fastify({
   logger: {
@@ -69,6 +70,48 @@ fastify.route({
       return reply.code(200).send({
         content: benchmarks
       })
+    } catch (error) {
+      log.error(error, 'Internal error')
+      return reply.code(500).send({ message: 'Internal Error' })
+    }
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/api/results',
+  schema: {
+    body: ResultSchema
+  },
+  handler: async (req, reply) => {
+    const { log, body } = req
+    log.info('Processing new result')
+    try {
+      const result = await fastify.prisma.result.create({
+        data: {
+          testDuration: body.state.testRunDurationMs,
+          httpReqDurationMin: body.metrics.http_req_duration.values.min,
+          httpReqDurationMax: body.metrics.http_req_duration.values.max,
+          httpReqDurationAvg: body.metrics.http_req_duration.values.avg,
+          httpReqDurationMed: body.metrics.http_req_duration.values.med,
+          iterationDurationMin: body.metrics.iteration_duration.values.min,
+          iterationDurationMax: body.metrics.iteration_duration.values.max,
+          iterationDurationAvg: body.metrics.iteration_duration.values.avg,
+          iterationDurationMed: body.metrics.iteration_duration.values.med,
+          iterationsCount: body.metrics.iterations.values.count,
+          iterationsRate: body.metrics.iterations.values.rate,
+          httpReqsCount: body.metrics.http_reqs.values.count,
+          httpReqsRate: body.metrics.http_reqs.values.rate,
+          executedAt: new Date(body.metadata.testConfig.executedAt),
+          benchmark: {
+            connect: {
+              id: body.metadata.testConfig.id
+            }
+          }
+        }
+      })
+
+      return reply.code(201).send(result)
     } catch (error) {
       log.error(error, 'Internal error')
       return reply.code(500).send({ message: 'Internal Error' })
