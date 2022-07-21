@@ -15,7 +15,7 @@ export function getBenchmarkSummaryFileName (testName, isGRPC) {
   return `/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/results/${timestamp}-${testName}-${mode}.json`
 }
 
-export function generateData (testName, data) {
+export function generateData (fileName, testConfig, data) {
   const GENERATE_SUMMARY = __ENV.GENERATE_SUMMARY === 'true'
   const IS_GRPC = __ENV.GRPC_ENABLED === 'true'
   const type = IS_GRPC ? 'gRPC' : 'REST'
@@ -27,9 +27,9 @@ export function generateData (testName, data) {
     }
   }
 
-  const summaryOutputFileName = getBenchmarkSummaryFileName(testName, IS_GRPC)
+  const summaryOutputFileName = getBenchmarkSummaryFileName(fileName, IS_GRPC)
 
-  data.metadata = { testName, type }
+  data.metadata = { type, testConfig }
   return {
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
     [`${summaryOutputFileName}`]: JSON.stringify(data)
