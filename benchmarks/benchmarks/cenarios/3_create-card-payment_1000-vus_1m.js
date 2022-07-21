@@ -1,6 +1,6 @@
 import http from 'k6/http'
 import { check } from 'k6'
-import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/src/utils/helpers.js'
+import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const GATEWAY_HOST = 'localhost:5000'
 const VUS = 1000
@@ -12,11 +12,15 @@ export const options = {
 }
 
 export default function () {
-  const url = `http://${GATEWAY_HOST}/api/cards`
+  const url = `http://${GATEWAY_HOST}/api/payments/card`
   const payload = JSON.stringify({
-    cardholder_name: 'Vinicius Barbosa',
-    is_credit: true,
-    is_debit: true
+    client_id: '56c4a18b-f67a-48b9-a914-98381bd995b9',
+    payment_type: 'CREDIT_CARD',
+    payment_date: '2022-07-14T16:32:21.147Z',
+    amount: 1000,
+    payment_info: {
+      card_token: '8b6ad026d5784b06b8e0ff30b1fcaeec589d0a9783224fd9b90b546bcc2ec965'
+    }
   })
 
   const params = {
@@ -32,5 +36,5 @@ export default function () {
 }
 
 export function handleSummary (data) {
-  return generateData(`${VUS}-vus-${DURATION}-create-card`, data)
+  return generateData(`${VUS}vus-${DURATION}-create-card-payment`, data)
 }

@@ -12,7 +12,7 @@ export function getNowTimestamp () {
 export function getBenchmarkSummaryFileName (testName, isGRPC) {
   const mode = isGRPC ? 'grpc' : 'http'
   const timestamp = getNowTimestamp()
-  return `src/results/${timestamp}-${testName}-${mode}.json`
+  return `/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/results/${timestamp}-${testName}-${mode}.json`
 }
 
 export function generateData (testName, data) {
@@ -32,6 +32,6 @@ export function generateData (testName, data) {
   data.metadata = { testName, type }
   return {
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
-    [`./${summaryOutputFileName}`]: JSON.stringify(data)
+    [`${summaryOutputFileName}`]: JSON.stringify(data)
   }
 }

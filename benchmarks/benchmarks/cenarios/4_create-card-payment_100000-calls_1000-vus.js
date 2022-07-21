@@ -1,6 +1,6 @@
 import http from 'k6/http'
 import { check } from 'k6'
-import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/src/utils/helpers.js'
+import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const GATEWAY_HOST = 'localhost:5000'
 
