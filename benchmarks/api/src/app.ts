@@ -3,7 +3,8 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 
 import prismaPlugin from './plugins/prisma'
-import ResultSchema from './schemas/Result'
+import ResultSchema, { CommunicationType } from './schemas/Result'
+import { Type as PrismaType } from '@prisma/client'
 
 const fastify = Fastify({
   logger: {
@@ -91,6 +92,7 @@ fastify.route({
     try {
       const result = await fastify.prisma.result.create({
         data: {
+          type: body.metadata.type,
           testDuration: body.state.testRunDurationMs,
           httpReqDurationMin: body.metrics.http_req_duration.values.min,
           httpReqDurationMax: body.metrics.http_req_duration.values.max,

@@ -24,9 +24,15 @@ model Benchmark {
   Results Result[]
 }
 
+enum Type {
+  GRPC
+  REST
+}
+
 model Result {
   id           String @id @default(uuid())
   testDuration Float  @db.Double
+  type         Type
 
   httpReqDurationMin Float @db.Double
   httpReqDurationMax Float @db.Double
@@ -38,16 +44,16 @@ model Result {
   iterationDurationAvg Float @db.Double
   iterationDurationMed Float @db.Double
 
-  iterationsCount Int @db.UnsignedInt
-  iterationsRate  Float  @db.Double
+  iterationsCount Int   @db.UnsignedInt
+  iterationsRate  Float @db.Double
 
-  httpReqsCount Int @db.UnsignedInt
-  httpReqsRate  Float  @db.Double
+  httpReqsCount Int   @db.UnsignedInt
+  httpReqsRate  Float @db.Double
 
   executedAt DateTime @default(now())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  benchmark Benchmark @relation(fields: [benchmarkId], references: [id])
+  benchmark   Benchmark @relation(fields: [benchmarkId], references: [id])
   benchmarkId String
 }

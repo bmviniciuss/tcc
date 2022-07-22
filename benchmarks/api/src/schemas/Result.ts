@@ -1,4 +1,5 @@
 import { Type } from '@sinclair/typebox'
+import { Type as PrismaType } from '@prisma/client'
 
 export const MMAM = Type.Object({
   min: Type.Number(),
@@ -19,7 +20,7 @@ export enum CommunicationType {
 
 const ResultSchema = Type.Object({
   metadata: Type.Object({
-    type: Type.Enum(CommunicationType),
+    type: Type.Enum(PrismaType),
     testConfig: Type.Object({
       id: Type.String(),
       name: Type.String(),
