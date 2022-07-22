@@ -4,7 +4,7 @@ CREATE SCHEMA IF NOT EXISTS cardms;
 
 CREATE TABLE IF NOT EXISTS cardms.cards (
   id uuid not null default uuid_generate_v4(),
-	pan varchar(16) not null unique,
+	pan varchar(16) not null,
 	masked_pan varchar(16) not null,
 	cvv varchar(3) not null,
 	cardholder_name varchar(256) not null,
