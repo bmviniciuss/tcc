@@ -123,4 +123,40 @@ fastify.route({
   }
 })
 
+fastify.route({
+  method: 'GET',
+  url: '/api/results/vus-series',
+  handler: async (req, reply) => {
+    const { log } = req
+    log.info('Processing new result')
+    try {
+      const benchmarks = await fastify.prisma.result.findMany({})
+      log.info(benchmarks)
+
+      const results = await fastify.prisma.result.groupBy({
+        by: ['type', 'benchmarkId'],
+        _avg: {
+          httpReqDurationMin: true,
+          httpReqDurationAvg: true,
+          httpReqDurationMax: true,
+          httpReqDurationMed: true,
+          httpReqsCount: true,
+          httpReqsRate: true,
+          iterationDurationAvg: true,
+          iterationDurationMax: true,
+          iterationDurationMed: true,
+          iterationDurationMin: true,
+          iterationsCount: true,
+          iterationsRate: true
+        }
+      })
+
+      return reply.code(200).send(results)
+    } catch (error) {
+      log.error(error, 'Internal error')
+      return reply.code(500).send({ message: 'Internal Error' })
+    }
+  }
+})
+
 export default fastify
