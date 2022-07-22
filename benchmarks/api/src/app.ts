@@ -29,6 +29,7 @@ fastify.route({
   url: '/api/benchmarks',
   schema: {
     body: Type.Object({
+      id: Type.Optional(Type.String()),
       name: Type.String(),
       vus: Type.Integer({ minimum: 0 }),
       duration: Type.Optional(Type.String()),
@@ -41,6 +42,7 @@ fastify.route({
     try {
       const benchmark = await fastify.prisma.benchmark.create({
         data: {
+          id: body?.id || undefined,
           name: body.name,
           vus: body.vus,
           duration: body?.duration ?? null,
