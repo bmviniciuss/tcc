@@ -29,7 +29,6 @@ func NewGRPCardAPI() *GRPCardAPI {
 }
 
 func (c *GRPCardAPI) CreateCard(input *card.CreateCardRequest) (*card.PresentationCard, error) {
-	log.Println("[GRPCardService] CreateCard")
 	client := pb.NewCardsClient(c.Conn)
 	req := &pb.CreateCardRequest{
 		CardholderName: input.CardholderName,
