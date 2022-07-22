@@ -18,7 +18,7 @@ export function getBenchmarkSummaryFileName (testName, isGRPC) {
 export function generateData (fileName, testConfig, data) {
   const GENERATE_SUMMARY = __ENV.GENERATE_SUMMARY === 'true'
   const IS_GRPC = __ENV.GRPC_ENABLED === 'true'
-  const type = IS_GRPC ? 'gRPC' : 'REST'
+  const type = IS_GRPC ? 'GRPC' : 'REST'
 
   if (!GENERATE_SUMMARY) {
     console.log('Not generating summary report for this benchmark')
