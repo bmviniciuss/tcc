@@ -9,33 +9,33 @@ const logger = pino({
 
 const benchmarks = [
   {
-    "id": "6623f5bc-fa13-464c-ac10-ffc0f564fc05",
-    "name": "create-card",
-    "vus": 1000,
-    "duration": "1m",
-  },
-  {
-    "id": "b681f416-b0ca-46ca-b775-1b1d56aad45c",
-    "name": "create-card",
-    "vus": 750,
-    "duration": "1m",
-  },
-  {
-    "id": "9d9e7cc3-2820-4086-92c9-3a2e5addbb69",
-    "name": "create-card",
-    "vus": 500,
-    "duration": "1m",
-  },
-  {
-    "id": "652f8a51-30af-4b57-a5e5-f7e3eb5a3a4c",
-    "name": "create-card",
-    "vus": 250,
-    "duration": "1m",
-  },
-  {
-    "id": "ca5c45f1-0535-42e3-bf83-248a31c58eaa",
+    "id": "f889ac39-6948-4782-afa0-93f678ad1a98",
     "name": "create-card",
     "vus": 100,
+    "duration": "1m",
+  },
+  {
+    "id": "14db1832-359c-4226-a0e5-59ee9399888a",
+    "name": "create-card",
+    "vus": 50,
+    "duration": "1m",
+  },
+  {
+    "id": "f31c8249-3080-4a20-9c51-1a8d4fd982c8",
+    "name": "create-card",
+    "vus": 25,
+    "duration": "1m",
+  },
+  {
+    "id": "dfce9f52-4c55-4845-bbc2-5ec8279ccf6e",
+    "name": "create-card",
+    "vus": 10,
+    "duration": "1m",
+  },
+  {
+    "id": "8244654e-51ff-481d-bd43-bbc86715a505",
+    "name": "create-card",
+    "vus": 1,
     "duration": "1m",
   }
 ]

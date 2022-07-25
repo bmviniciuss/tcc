@@ -3,7 +3,7 @@ import { check } from 'k6'
 import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const testConfig = {
-  id: "36c812b5-ce7e-46d6-8bf2-1b749fd2c4a6",
+  id: "8244654e-51ff-481d-bd43-bbc86715a505",
   name: "create-card-payment",
   vus: 1,
   duration: '1m',
@@ -20,9 +20,9 @@ export const options = {
 export default function () {
   const url = `http://${GATEWAY_HOST}/api/payments/card`
   const payload = JSON.stringify({
-    "client_id": "{{$guid}}",
+    "client_id": "8fd14b79-956f-4261-a509-2efe63c6de39",
     "payment_type": "CREDIT_CARD",
-    "payment_date": "{{$isoTimestamp}}",
+    "payment_date": "2022-07-25T19:52:42.972Z",
     "amount": 1000,
     "payment_info": {
         "card_token": "ede2131f7b354ad98a8ff60f4ba529cb783b21025ed14f448af669a119fa9957"

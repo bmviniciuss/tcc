@@ -11,7 +11,7 @@ const logger = pino({
 
 async function main() {
   logger.info("API-Injester process started")
-  const fileRootPath = path.resolve('..', 'results', 'create-card-2')
+  const fileRootPath = path.resolve('..', 'results', 'create-card-3')
   const files = await fsp.readdir(fileRootPath)
 
   logger.info(`Found ${files.length} files`);
