@@ -51,25 +51,25 @@ func (r *postgresCardRepository) Generate(card *card.Card) error {
 }
 
 func (r *postgresCardRepository) GetByToken(token string) (*card.Card, error) {
-	// pgCard := PostgresCard{}
-	return nil, nil
-	// err := r.Db.Get(&pgCard, "select c.* from cardms.cards c where c.token=$1 LIMIT 1", token)
+	card := &card.Card{}
+	sql := "select id, pan, masked_pan, cvv, cardholder_name, token, expiration_year, expiration_month, active, is_debit, is_credit from cardms.cards where token=$1 LIMIT 1"
+	err := r.Db.QueryRow(context.Background(), sql, token).Scan(
+		&card.Id,
+		&card.Number,
+		&card.MaskedNumber,
+		&card.Cvv,
+		&card.CardholderName,
+		&card.Token,
+		&card.ExpirationYear,
+		&card.ExpirationMonth,
+		&card.Active,
+		&card.IsDebit,
+		&card.IsCredit,
+	)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
-	// return &card.Card{
-	// 	Id:              pgCard.Id,
-	// 	Number:          pgCard.Number,
-	// 	Cvv:             pgCard.Cvv,
-	// 	CardholderName:  pgCard.CardholderName,
-	// 	Token:           pgCard.Token,
-	// 	MaskedNumber:    pgCard.MaskedNumber,
-	// 	ExpirationYear:  pgCard.ExpirationYear,
-	// 	ExpirationMonth: pgCard.ExpirationMonth,
-	// 	Active:          *pgCard.Active,
-	// 	IsCredit:        *pgCard.IsCredit,
-	// 	IsDebit:         *pgCard.IsDebit,
-	// }, nil
+	return card, nil
 }

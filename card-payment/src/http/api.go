@@ -1,16 +1,15 @@
 package api
 
 import (
+	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
 	"time"
 
-	"github.com/bmviniciuss/tcc/card-payment/src/factories"
 	paymenthandler "github.com/bmviniciuss/tcc/card-payment/src/http/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/jmoiron/sqlx"
 )
 
-func NewApi(db *sqlx.DB) *chi.Mux {
+func NewApi(paymentService payment.Service) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -21,7 +20,7 @@ func NewApi(db *sqlx.DB) *chi.Mux {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/payment", func(r chi.Router) {
-			paymenthandler.NewPaymentController(factories.NewPaymentService(db)).Route(r)
+			paymenthandler.NewPaymentController(paymentService).Route(r)
 		})
 	})
 

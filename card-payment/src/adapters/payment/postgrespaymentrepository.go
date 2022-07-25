@@ -1,11 +1,13 @@
 package postgrespaymentrepository
 
 import (
+	"context"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"time"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
-	"github.com/jmoiron/sqlx"
 )
 
 type Payment struct {
@@ -33,41 +35,49 @@ func (Payment) TableName() string {
 }
 
 type postgresPaymentRepository struct {
-	Db sqlx.DB
+	Db pgxpool.Pool
 }
 
-func NewPostgresPaymentRepository(db *sqlx.DB) *postgresPaymentRepository {
+func NewPostgresPaymentRepository(db *pgxpool.Pool) *postgresPaymentRepository {
 	return &postgresPaymentRepository{
 		Db: *db,
 	}
 }
 
 func (r *postgresPaymentRepository) Create(payment *payment.Payment) error {
-	tx, err := r.Db.Beginx()
+	ctx := context.TODO()
+	tx, err := r.Db.BeginTx(ctx, pgx.TxOptions{})
+
+	if err != nil {
+		return nil
+	}
+	defer tx.Rollback(context.TODO())
+
+	err = createPayment(tx, payment)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
 
-	if err := createPayment(tx, payment); err != nil {
+	err = createPayable(tx, payment)
+	if err != nil {
 		return err
 	}
 
-	if err := createPayable(tx, payment); err != nil {
+	err = tx.Commit(context.TODO())
+	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return nil
 }
 
-func createPayment(tx *sqlx.Tx, payment *payment.Payment) error {
+func createPayment(tx pgx.Tx, payment *payment.Payment) error {
 	sql := `
-		INSERT INTO cardpaymentms.payments 
-		(client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date) 
+		INSERT INTO cardpaymentms.payments
+		(client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date)
 		VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id
 	`
-	err := tx.QueryRow(
-		sql,
+	err := tx.QueryRow(context.TODO(), sql,
 		payment.ClientId,
 		payment.PaymentType,
 		payment.Amount,
@@ -77,57 +87,62 @@ func createPayment(tx *sqlx.Tx, payment *payment.Payment) error {
 		payment.PaymentDate).Scan(&payment.Id)
 
 	if err != nil {
+		log.Println("Error while creating payment")
+		log.Printf("Error: %s", err.Error())
 		return err
 	}
 
-	payment.Payable.PaymentId = payment.Id
+	log.Println("Payment created")
 
 	return nil
 }
 
-func createPayable(tx *sqlx.Tx, payment *payment.Payment) error {
+func createPayable(tx pgx.Tx, payment *payment.Payment) error {
 	sql := `
-		INSERT INTO cardpaymentms.payables 
-		(client_id, payment_id, payment_date, amount) 
+		INSERT INTO cardpaymentms.payables
+		(client_id, payment_id, payment_date, amount)
 		VALUES($1, $2, $3, $4) RETURNING id
 	`
-	err := tx.QueryRow(
-		sql,
+	err := tx.QueryRow(context.TODO(), sql,
 		payment.Payable.ClientId,
 		payment.Id,
 		payment.Payable.PaymentDate,
-		payment.Amount).Scan(&payment.Payable.Id)
+		payment.Amount,
+	).Scan(&payment.Payable.Id)
 
 	if err != nil {
+		log.Println("Error while creating payable")
+		log.Printf("Error: %s", err.Error())
 		return err
 	}
+	log.Println("Payable Created")
 
 	return nil
 }
 
 func (r *postgresPaymentRepository) GetPaymentsByClientId(input *payment.GetPaymentsByClientIdInput) ([]payment.Payment, error) {
-	log.Println("PostgresRepo.GetPaymentsByClientId: Process started: ", input.ClientId)
-	pp := []Payment{}
-	res := []payment.Payment{}
-	err := r.Db.Select(&pp, "SELECT * FROM cardpaymentms.payments WHERE client_id=$1", input.ClientId)
+	//log.Println("PostgresRepo.GetPaymentsByClientId: Process started: ", input.ClientId)
+	//pp := []Payment{}
+	//res := []payment.Payment{}
+	//err := r.Db.Select(&pp, "SELECT * FROM cardpaymentms.payments WHERE client_id=$1", input.ClientId)
+	//
+	//if err != nil {
+	//	log.Println("PostgresRepo.GetPaymentsByClientId: Error in query", err)
+	//	return res, err // TODO: use generic error in the future
+	//}
+	//
+	//for _, p := range pp {
+	//	res = append(res, payment.Payment{
+	//		Id:          p.Id,
+	//		ClientId:    p.ClientId,
+	//		Amount:      p.Amount,
+	//		PaymentType: p.PaymentType,
+	//		PaymentInfo: payment.PaymentInfo{
+	//			MaskedNumber: p.MaskedNumber,
+	//		},
+	//		PaymentDate: p.PaymentDate,
+	//	})
+	//}
 
-	if err != nil {
-		log.Println("PostgresRepo.GetPaymentsByClientId: Error in query", err)
-		return res, err // TODO: use generic error in the future
-	}
-
-	for _, p := range pp {
-		res = append(res, payment.Payment{
-			Id:          p.Id,
-			ClientId:    p.ClientId,
-			Amount:      p.Amount,
-			PaymentType: p.PaymentType,
-			PaymentInfo: payment.PaymentInfo{
-				MaskedNumber: p.MaskedNumber,
-			},
-			PaymentDate: p.PaymentDate,
-		})
-	}
-
-	return res, nil
+	return []payment.Payment{}, nil
 }

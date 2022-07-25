@@ -2,22 +2,20 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"math"
-	"net"
-	"net/http"
-	"os"
-	"time"
-
 	"github.com/bmviniciuss/tcc/card-payment/src/adapters/db"
 	"github.com/bmviniciuss/tcc/card-payment/src/factories"
 	grpcpaymentserver "github.com/bmviniciuss/tcc/card-payment/src/grpc"
 	"github.com/bmviniciuss/tcc/card-payment/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card-payment/src/http"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log"
+	"math"
+	"net"
+	"net/http"
+	"os"
 )
 
 func main() {
@@ -27,21 +25,20 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	db := db.ConnectDB()
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(25)
-	db.SetConnMaxLifetime(5 * time.Minute)
+	dbConn := db.ConnectDB()
+	defer dbConn.Close()
+
 	appPort := os.Getenv("PORT")
 	grpcEnabled := os.Getenv("GRPC_ENABLED")
 
 	if grpcEnabled == "true" {
-		runGrpc(db, appPort)
+		runGrpc(dbConn, appPort)
 	} else {
-		runHttp(db, appPort)
+		runHttp(dbConn, appPort)
 	}
 }
 
-func runGrpc(db *sqlx.DB, appPort string) {
+func runGrpc(db *pgxpool.Pool, appPort string) {
 	log.Println("MAX: ", math.MaxInt32)
 
 	gs := grpc.NewServer()
@@ -62,9 +59,10 @@ func runGrpc(db *sqlx.DB, appPort string) {
 	}
 }
 
-func runHttp(db *sqlx.DB, appPort string) {
+func runHttp(db *pgxpool.Pool, appPort string) {
+	paymentService := factories.NewPaymentService(db)
+	mux := api.NewApi(paymentService)
 
-	mux := api.NewApi(db)
 	server := http.Server{
 		Addr:    ":" + appPort,
 		Handler: mux,
