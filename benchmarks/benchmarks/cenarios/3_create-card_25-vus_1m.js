@@ -3,9 +3,9 @@ import { check } from 'k6'
 import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const testConfig = {
-  id: "9d9e7cc3-2820-4086-92c9-3a2e5addbb69",
+  id: "f31c8249-3080-4a20-9c51-1a8d4fd982c8",
   name: "create-card",
-  vus: 500,
+  vus: 25,
   duration: '1m',
   executedAt: new Date().toISOString()
 }
