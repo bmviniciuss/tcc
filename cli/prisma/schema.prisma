@@ -30,6 +30,7 @@ enum Type {
 model Result {
   id           String @id @default(uuid())
   testDuration Float  @db.DoublePrecision
+  fileName     String @unique
   type         Type
 
   httpReqDurationMin Float @db.DoublePrecision
