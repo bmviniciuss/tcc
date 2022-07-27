@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Benchmark {
+  id         String   @id @default(uuid())
+  name       String
+  vus        Int
+  duration   String?
+  iterations Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Results Result[]
+}
+
+enum Type {
+  GRPC
+  REST
+}
+
+model Result {
+  id           String @id @default(uuid())
+  testDuration Float  @db.DoublePrecision
+  type         Type
+
+  httpReqDurationMin Float @db.DoublePrecision
+  httpReqDurationMax Float @db.DoublePrecision
+  httpReqDurationAvg Float @db.DoublePrecision
+  httpReqDurationMed Float @db.DoublePrecision
+
+  iterationDurationMin Float @db.DoublePrecision
+  iterationDurationMax Float @db.DoublePrecision
+  iterationDurationAvg Float @db.DoublePrecision
+  iterationDurationMed Float @db.DoublePrecision
+
+  iterationsCount Int
+  iterationsRate  Float @db.DoublePrecision
+
+  httpReqsCount Int
+  httpReqsRate  Float @db.DoublePrecision
+
+  executedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  benchmark   Benchmark @relation(fields: [benchmarkId], references: [id])
+  benchmarkId String
+}
