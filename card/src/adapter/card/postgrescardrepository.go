@@ -38,8 +38,11 @@ func NewPostgresCardRepository(db *pgxpool.Pool) *postgresCardRepository {
 func (r *postgresCardRepository) Generate(card *card.Card) error {
 	var id string
 
-	insertSQL := "INSERT INTO cardms.cards (id, pan, masked_pan, cvv, cardholder_name, \"token\", expiration_year, expiration_month, active, is_debit, is_credit) VALUES(uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id"
-	err := r.Db.QueryRow(context.Background(), insertSQL, card.Number, card.MaskedNumber, card.Cvv, card.CardholderName, card.Token, card.ExpirationYear, card.ExpirationMonth, card.Active, card.IsDebit, card.IsCredit).Scan(&id)
+	insertSQL := "INSERT INTO cardms.cards (" +
+		"id, pan, masked_pan, cvv, cardholder_name, " +
+		"\"token\", expiration_year, expiration_month, active, " +
+		"is_debit, is_credit) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id"
+	err := r.Db.QueryRow(context.Background(), insertSQL, card.Id, card.Number, card.MaskedNumber, card.Cvv, card.CardholderName, card.Token, card.ExpirationYear, card.ExpirationMonth, card.Active, card.IsDebit, card.IsCredit).Scan(&id)
 
 	if err != nil {
 		return err
@@ -51,25 +54,25 @@ func (r *postgresCardRepository) Generate(card *card.Card) error {
 }
 
 func (r *postgresCardRepository) GetByToken(token string) (*card.Card, error) {
-	card := &card.Card{}
+	c := &card.Card{}
 	sql := "select id, pan, masked_pan, cvv, cardholder_name, token, expiration_year, expiration_month, active, is_debit, is_credit from cardms.cards where token=$1 LIMIT 1"
 	err := r.Db.QueryRow(context.Background(), sql, token).Scan(
-		&card.Id,
-		&card.Number,
-		&card.MaskedNumber,
-		&card.Cvv,
-		&card.CardholderName,
-		&card.Token,
-		&card.ExpirationYear,
-		&card.ExpirationMonth,
-		&card.Active,
-		&card.IsDebit,
-		&card.IsCredit,
+		&c.Id,
+		&c.Number,
+		&c.MaskedNumber,
+		&c.Cvv,
+		&c.CardholderName,
+		&c.Token,
+		&c.ExpirationYear,
+		&c.ExpirationMonth,
+		&c.Active,
+		&c.IsDebit,
+		&c.IsCredit,
 	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return card, nil
+	return c, nil
 }

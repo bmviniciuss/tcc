@@ -4,6 +4,7 @@ import (
 	"log"
 
 	carddetails "github.com/bmviniciuss/tcc/card/src/core/cardDetails"
+	"github.com/google/uuid"
 )
 
 type Card struct {
@@ -69,6 +70,7 @@ func (s *CardService) Generate(generateCardDTO *GenerateCardServiceInput) (*Card
 	MaskedNumber := MaskPANNumber(cardDetails.Number)
 
 	card := &Card{
+		Id:              uuid.New().String(),
 		Number:          cardDetails.Number,
 		Cvv:             cardDetails.Cvv,
 		CardholderName:  generateCardDTO.CardholderName,
@@ -80,6 +82,8 @@ func (s *CardService) Generate(generateCardDTO *GenerateCardServiceInput) (*Card
 		IsCredit:        generateCardDTO.IsCredit,
 		IsDebit:         generateCardDTO.IsDebit,
 	}
+
+	log.Println("ID: ", card.Id)
 
 	err = s.cardRepository.Generate(card)
 
