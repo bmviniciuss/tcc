@@ -2,10 +2,12 @@ package postgrespaymentrepository
 
 import (
 	"context"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
 )
@@ -74,10 +76,11 @@ func (r *postgresPaymentRepository) Create(payment *payment.Payment) error {
 func createPayment(tx pgx.Tx, payment *payment.Payment) error {
 	sql := `
 		INSERT INTO cardpaymentms.payments
-		(client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date)
-		VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id
+		(id, client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
 	`
 	err := tx.QueryRow(context.TODO(), sql,
+		uuid.New().String(),
 		payment.ClientId,
 		payment.PaymentType,
 		payment.Amount,
@@ -100,10 +103,11 @@ func createPayment(tx pgx.Tx, payment *payment.Payment) error {
 func createPayable(tx pgx.Tx, payment *payment.Payment) error {
 	sql := `
 		INSERT INTO cardpaymentms.payables
-		(client_id, payment_id, payment_date, amount)
-		VALUES($1, $2, $3, $4) RETURNING id
+		(id, client_id, payment_id, payment_date, amount)
+		VALUES($1, $2, $3, $4, $5) RETURNING id
 	`
 	err := tx.QueryRow(context.TODO(), sql,
+		uuid.New().String(),
 		payment.Payable.ClientId,
 		payment.Id,
 		payment.Payable.PaymentDate,
