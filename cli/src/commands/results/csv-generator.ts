@@ -1,6 +1,6 @@
-import {Command} from '@oclif/core'
-import {PrismaClient} from '@prisma/client'
-import {parse} from 'json2csv'
+import { Command } from '@oclif/core'
+import { PrismaClient } from '@prisma/client'
+import { parse } from 'json2csv'
 import * as fs from 'node:fs/promises'
 import path = require('path')
 
@@ -22,17 +22,17 @@ export default class ResultsCSVGEnerator extends Command {
   static description = 'Generate results csv to analysis'
 
   static examples = [
-    '$ tcc-cli results csv-generator',
+    '$ tcc-cli results csv-generator'
   ]
 
   static flags = {}
 
   static args = [
-    {name: 'path', description: 'Path to the file that will be generated', required: true},
+    { name: 'path', description: 'Path to the file that will be generated', required: true }
   ]
 
-  async run(): Promise<void> {
-    const {args} = await this.parse(ResultsCSVGEnerator)
+  async run (): Promise<void> {
+    const { args } = await this.parse(ResultsCSVGEnerator)
     // CliUx.ux.action.start('Removing all results from database')
     const res: TestResult[] = await prisma.$queryRaw`
           SELECT b.vus, type, name,
@@ -56,10 +56,10 @@ export default class ResultsCSVGEnerator extends Command {
       'http_req_duration_avg',
       'http_req_duration_med',
       'http_reqs_count',
-      'http_reqs_rate',
+      'http_reqs_rate'
     ]
-    const csv = parse(res, {fields})
+    const csv = parse(res, { fields })
     const absPath = path.resolve(process.cwd(), args.path)
-    await fs.writeFile(absPath, csv, {encoding: 'utf8'})
+    await fs.writeFile(absPath, csv, { encoding: 'utf8' })
   }
 }

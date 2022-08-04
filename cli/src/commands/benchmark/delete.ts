@@ -1,5 +1,5 @@
-import {Command, CliUx} from '@oclif/core'
-import {PrismaClient} from '@prisma/client'
+import { Command, CliUx } from '@oclif/core'
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -18,9 +18,9 @@ export default class BenchmarksDeleter extends Command {
   static flags = {}
   static args = []
 
-  async run(): Promise<void> {
+  async run (): Promise<void> {
     CliUx.ux.action.start('Removing all benchmarks tests from database')
-    await prisma.benchmark.deleteMany({where: {}})
+    await prisma.benchmark.deleteMany({ where: {} })
     CliUx.ux.action.stop('Done')
   }
 }

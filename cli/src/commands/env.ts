@@ -1,29 +1,29 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
-import {parse, stringify} from 'envfile'
+import { parse, stringify } from 'envfile'
 
 export default class EnvModifier extends Command {
   static description = 'Change the microsservices mode'
 
   static examples = [
-    '$ tcc-cli env ../ --mode grpc',
+    '$ tcc-cli env ../ --mode grpc'
   ]
 
   static flags = {
-    mode: Flags.enum({options: ['grpc', 'http']}),
+    mode: Flags.enum({ options: ['grpc', 'http'] })
   }
 
   static args = [
-    {name: 'path', description: 'Path that microsservices folders', required: true},
+    { name: 'path', description: 'Path that microsservices folders', required: true }
   ]
 
-  async run(): Promise<void> {
-    const {args, flags} = await this.parse(EnvModifier)
+  async run (): Promise<void> {
+    const { args, flags } = await this.parse(EnvModifier)
 
     const allowedValuesSet = new Set(['grpc', 'http'])
     const mode: 'grpc' | 'http' = flags.mode
-    const {path: rootPath} = args
+    const { path: rootPath } = args
 
     if (!allowedValuesSet.has(mode)) {
       console.error(`${mode} is not allowed. Must be one of the following [ ${[...allowedValuesSet].join(', ')} ]`)
@@ -38,17 +38,17 @@ export default class EnvModifier extends Command {
     }
   }
 
-  private getEnvFilePath(rootPath: string, projectName: string) {
+  private getEnvFilePath (rootPath: string, projectName: string) {
     return path.resolve(rootPath, projectName, '.env')
   }
 
-  private async changeEnvForProject(path: string, mode: 'grpc' | 'http') {
+  private async changeEnvForProject (path: string, mode: 'grpc' | 'http') {
     const grpcEnabledFlag = mode === 'grpc'
     console.log(`Setting ${path} to ${grpcEnabledFlag ? 'GRPC' : 'HTPP'}`)
 
     const content = await fs.readFile(path, {
       encoding: 'utf-8',
-      flag: 'r',
+      flag: 'r'
     })
 
     const envVariables = parse(content)

@@ -1,10 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import {Command} from '@oclif/core'
-import {OutputArgs} from '@oclif/core/lib/interfaces'
+import { Command } from '@oclif/core'
+import { OutputArgs } from '@oclif/core/lib/interfaces'
 import * as path from 'node:path'
 import * as fs from 'node:fs/promises'
-import {PrismaClient} from '@prisma/client'
-import {Type as TestType} from '.prisma/client'
+import { PrismaClient } from '@prisma/client'
+import { Type as TestType } from '.prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -226,17 +226,17 @@ export default class ResultsInjest extends Command {
   static description = 'Injets results from a folder'
 
   static examples = [
-    '$ tcc-cli results injest ../benchmarks/benchmarks/api-injester/benchmarks-tests.json',
+    '$ tcc-cli results injest ../benchmarks/benchmarks/api-injester/benchmarks-tests.json'
   ]
 
   static flags = {}
 
   static args = [
-    {name: 'path', description: 'Path that contains results to be injests.', required: true},
+    { name: 'path', description: 'Path that contains results to be injests.', required: true }
   ]
 
-  async run(): Promise<void> {
-    const {args} = await this.parse(ResultsInjest)
+  async run (): Promise<void> {
+    const { args } = await this.parse(ResultsInjest)
     const resultsPath = this.getResultsPath(args)
     this.log(`Reading results from ${resultsPath}`)
 
@@ -247,11 +247,11 @@ export default class ResultsInjest extends Command {
     for (const fileName of files) {
       this.log(`Processing ${index + 1}/${files.length}: ${fileName}`)
       const filePath = path.join(resultsPath, fileName)
-      const file = await fs.readFile(filePath, {encoding: 'utf8'})
+      const file = await fs.readFile(filePath, { encoding: 'utf8' })
       const content: FileResult = JSON.parse(file)
       await prisma.result.create({
         data: {
-          fileName: fileName,
+          fileName,
           type: content.metadata.type,
           testDuration: content.state.testRunDurationMs,
           httpReqDurationMin: content.metrics.http_req_duration.values.min,
@@ -269,16 +269,16 @@ export default class ResultsInjest extends Command {
           executedAt: new Date(content.metadata.testConfig.executedAt),
           benchmark: {
             connect: {
-              id: content.metadata.testConfig.id,
-            },
-          },
-        },
+              id: content.metadata.testConfig.id
+            }
+          }
+        }
       })
       index++
     }
   }
 
-  private getResultsPath(args: OutputArgs): string {
+  private getResultsPath (args: OutputArgs): string {
     return path.resolve(process.cwd(), args.path)
   }
 }
