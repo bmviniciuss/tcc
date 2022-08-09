@@ -3,9 +3,9 @@ import { check } from 'k6'
 import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const testConfig = {
-  id: "8244654e-51ff-481d-bd43-bbc86715a505",
+  id: "c4e77cc4-0103-4abc-ac9e-da0f78901f4e",
   name: "create-card-payment",
-  vus: 1,
+  vus: 50,
   duration: '1m',
   executedAt: new Date().toISOString()
 }
@@ -25,7 +25,7 @@ export default function () {
     "payment_date": "2022-07-25T19:52:42.972Z",
     "amount": 1000,
     "payment_info": {
-        "card_token": "ede2131f7b354ad98a8ff60f4ba529cb783b21025ed14f448af669a119fa9957"
+        "card_token": "fe87679028494cec9a4cea63fddf6325cd0be004179649c98051b2235a562af5"
     }
 })
 
