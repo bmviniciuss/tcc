@@ -83,8 +83,6 @@ func (s *CardService) Generate(generateCardDTO *GenerateCardServiceInput) (*Card
 		IsDebit:         generateCardDTO.IsDebit,
 	}
 
-	log.Println("ID: ", card.Id)
-
 	err = s.cardRepository.Generate(card)
 
 	if err != nil {
