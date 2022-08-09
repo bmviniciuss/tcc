@@ -3,7 +3,7 @@ import { check } from 'k6'
 import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const testConfig = {
-  id: "36c812b5-ce7e-46d6-8bf2-1b749fd2c4a6",
+  id: "8244654e-51ff-481d-bd43-bbc86715a505",
   name: "create-card",
   vus: 1,
   duration: '1m',
