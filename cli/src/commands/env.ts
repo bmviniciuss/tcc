@@ -22,7 +22,7 @@ export default class EnvModifier extends Command {
     const { args, flags } = await this.parse(EnvModifier)
 
     const allowedValuesSet = new Set(['grpc', 'http'])
-    const mode: 'grpc' | 'http' = flags.mode
+    const mode: 'grpc' | 'http' = flags.mode as 'grpc' | 'http'
     const { path: rootPath } = args
 
     if (!allowedValuesSet.has(mode)) {

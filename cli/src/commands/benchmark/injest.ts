@@ -1,4 +1,4 @@
-import { Command, CliUx } from '@oclif/core'
+import { Command } from '@oclif/core'
 import { OutputArgs } from '@oclif/core/lib/interfaces'
 import * as path from 'node:path'
 import * as fs from 'node:fs/promises'
@@ -44,12 +44,12 @@ export default class BenchmarksInjest extends Command {
       iterations: b?.iterations ?? null
     }))
 
-    CliUx.ux.action.start('Inserting benchmarks tests to the database')
+    this.log('Inserting benchmarks tests to the database')
 
     await prisma.benchmark.createMany({
       data: createManyData
     })
-    CliUx.ux.action.stop('Done')
+    this.log('Done')
   }
 
   private getFilePath (args: OutputArgs): string {
