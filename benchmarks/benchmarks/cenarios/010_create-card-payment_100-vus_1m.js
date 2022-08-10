@@ -25,7 +25,7 @@ export default function () {
     "payment_date": "2022-07-25T19:52:42.972Z",
     "amount": 1000,
     "payment_info": {
-        "card_token": "fe87679028494cec9a4cea63fddf6325cd0be004179649c98051b2235a562af5"
+        "card_token": "cbd3feed77764e5ab63c0b67fdf138b1dded578a56ba4e0eb1a16bbd17f9e37a"
     }
 })
 
