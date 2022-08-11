@@ -17,7 +17,26 @@ export const options = {
   duration: testConfig.duration
 }
 
-export default function () {
+export function setup() {
+  const cardUrl = `http://${GATEWAY_HOST}/api/cards`
+
+  const payload = JSON.stringify({
+    cardholder_name: 'Vinicius Barbosa',
+    is_credit: true,
+    is_debit: true
+  })
+
+  const params = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  const res = http.post(cardUrl, payload, params)
+  return { card: res.json() };
+}
+
+export default function ({card}) {
   const url = `http://${GATEWAY_HOST}/api/payments/card`
   const payload = JSON.stringify({
     "client_id": "8fd14b79-956f-4261-a509-2efe63c6de39",
@@ -25,7 +44,7 @@ export default function () {
     "payment_date": "2022-07-25T19:52:42.972Z",
     "amount": 1000,
     "payment_info": {
-        "card_token": "cbd3feed77764e5ab63c0b67fdf138b1dded578a56ba4e0eb1a16bbd17f9e37a"
+        "card_token": card.token
     }
 })
 
