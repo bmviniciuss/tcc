@@ -3,7 +3,7 @@
 build:
 	go build -o ./build/api ./src/cmd/api/main.go
 
-build-protobuf:
+compile-protobuf:
 	sh ./scripts/build-proto.sh
 
 prd: build

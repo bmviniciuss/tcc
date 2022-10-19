@@ -15,4 +15,16 @@ CREATE TABLE IF NOT EXISTS cardms.cards (
 	is_debit boolean not null,
 	is_credit boolean not null,
 	constraint cards_pkey primary key (id)
-)
+);
+
+CREATE TABLE IF NOT EXISTS cardms.payment_authorization (
+  	id uuid not null default uuid_generate_v4(),
+	amount double precision not null,
+	"status" varchar(16) not null,
+	card_id uuid not null,
+	transaction_date timestamptz not null,
+	created_at timestamptz default now(),
+	constraint payment_authorization_pkey primary key (id),
+	constraint payment_authorization_card_fkey foreign key (card_id) references cardms.cards(id)
+);
+

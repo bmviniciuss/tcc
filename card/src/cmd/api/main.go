@@ -15,17 +15,18 @@ import (
 	api "github.com/bmviniciuss/tcc/card/src/http"
 	"github.com/jackc/pgx/v4/pgxpool"
 
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	// err := godotenv.Load()
+	err := godotenv.Load()
 
-	// if err != nil {
-	// 	log.Fatal("[Main] Error loading .env file")
-	// }
+	if err != nil {
+		log.Fatal("[Main] Error loading .env file")
+	}
 
 	db := db.ConnectDB()
 	defer db.Close()
@@ -75,7 +76,9 @@ func runHTTP(db *pgxpool.Pool) {
 
 	appPort := os.Getenv("PORT")
 	cardService := factories.CardServiceFactory(db)
-	mux := api.NewApi(cardService)
+	paymentService := factories.PaymentServiceFactory(db)
+
+	mux := api.NewApi(cardService, paymentService)
 
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%s", appPort),
