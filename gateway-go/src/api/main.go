@@ -7,16 +7,9 @@ import (
 	"os"
 
 	"github.com/bmviniciuss/gateway/src/api/router"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("[Main] Error loading .env file")
-	}
-
 	grpcEnabled := os.Getenv("GRPC_ENABLED") == "true"
 
 	log.Println("Starting up Gateway Server...")

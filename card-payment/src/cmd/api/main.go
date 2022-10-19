@@ -2,28 +2,28 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"math"
+	"net"
+	"net/http"
+	"os"
+
 	"github.com/bmviniciuss/tcc/card-payment/src/adapters/db"
 	"github.com/bmviniciuss/tcc/card-payment/src/factories"
 	grpcpaymentserver "github.com/bmviniciuss/tcc/card-payment/src/grpc"
 	"github.com/bmviniciuss/tcc/card-payment/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card-payment/src/http"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"math"
-	"net"
-	"net/http"
-	"os"
 )
 
 func main() {
-	err := godotenv.Load()
+	// err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	dbConn := db.ConnectDB()
 	defer dbConn.Close()
