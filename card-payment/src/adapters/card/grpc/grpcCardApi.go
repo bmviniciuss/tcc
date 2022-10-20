@@ -10,13 +10,13 @@ import (
 )
 
 type GRPCardAPI struct {
-	Conn *grpc.ClientConn
+	client pb.CardsClient
 }
 
 func NewGRPCardAPI(Conn *grpc.ClientConn) *GRPCardAPI {
 
 	return &GRPCardAPI{
-		Conn: Conn,
+		client: pb.NewCardsClient(Conn),
 	}
 }
 
@@ -39,10 +39,7 @@ type Card struct {
 func (c *GRPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
 	log.Println("[GRPCardAPI] GetCardByToken")
 
-	client := pb.NewCardsClient(c.Conn)
-	resp, err := client.GetCardByToken(context.Background(), &pb.GetCardByTokenRequest{Token: token})
-
-	log.Printf("[GRPCardAPI] GetCardByToken resp: %v", resp)
+	resp, err := c.client.GetCardByToken(context.Background(), &pb.GetCardByTokenRequest{Token: token})
 
 	if err != nil {
 		log.Println("[GRPCardAPI] GetCardByToken error: ", err)
@@ -59,5 +56,29 @@ func (c *GRPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
 		Active:          resp.GetActive(),
 		IsCredit:        resp.GetIsCredit(),
 		IsDebit:         resp.GetIsDebit(),
+	}, nil
+}
+
+func (c *GRPCardAPI) AuthorizePayment(input *payment.PaymentAuthorizationInput) (*payment.PaymentAuthorization, error) {
+	log.Println("[GRPCardAPI] AuthorizePayment")
+
+	resp, err := c.client.AuthorizePayment(context.Background(), &pb.AuhtorizePaymentRequest{
+		Amount:          input.Amount,
+		CardToken:       input.CardToken,
+		PaymentType:     input.PaymentType,
+		TrasanctionDate: input.TransactionDate,
+	})
+
+	if err != nil {
+		log.Println("[GRPCardAPI] AuthorizePayment error = ", err.Error())
+		return nil, err
+	}
+
+	return &payment.PaymentAuthorization{
+		Id:              resp.GetId(),
+		Amount:          resp.GetAmount(),
+		Status:          resp.GetStatus(),
+		TransactionDate: resp.GetTransactionDate(),
+		CreateAt:        resp.GetCreatedAt(),
 	}, nil
 }

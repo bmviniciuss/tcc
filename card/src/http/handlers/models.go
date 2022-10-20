@@ -9,7 +9,6 @@ type PaymentAuthorization struct {
 }
 
 type CreatePaymentAuthorization struct {
-	ServiceId       string  `json:"service_id"`
 	Amount          float64 `json:"amount"`
 	CardToken       string  `json:"card_token"`
 	PaymentType     string  `json:"payment_type"`

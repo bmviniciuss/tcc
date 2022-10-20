@@ -93,7 +93,7 @@ func handleAuthorizePayment(paymentService *payment.PaymentService) func(rw http
 			CreateAt:        paymentAuthorization.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		}
 
-		rw.WriteHeader(http.StatusOK)
+		rw.WriteHeader(http.StatusCreated)
 		json.NewEncoder(rw).Encode(p)
 	}
 }

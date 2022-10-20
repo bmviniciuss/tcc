@@ -8,13 +8,14 @@ const (
 )
 
 type Payment struct {
-	Id          string
-	ClientId    string
-	Amount      float64
-	PaymentType string
-	PaymentInfo PaymentInfo
-	PaymentDate time.Time
-	Payable     Payable
+	Id              string
+	ClientId        string
+	Amount          float64
+	PaymentType     string
+	PaymentInfo     PaymentInfo
+	PaymentDate     time.Time
+	Payable         Payable
+	AuthorizationId string
 }
 
 type Amount struct {
@@ -46,4 +47,19 @@ type Payable struct {
 	PaymentId   string
 	PaymentDate time.Time
 	Amount      float64
+}
+
+type PaymentAuthorization struct {
+	Id              string  `json:"id"`
+	Amount          float64 `json:"amount"`
+	Status          string  `json:"status"`
+	TransactionDate string  `json:"transaction_date"`
+	CreateAt        string  `json:"create_at"`
+}
+
+type PaymentAuthorizationInput struct {
+	Amount          float64 `json:"amount"`
+	CardToken       string  `json:"card_token"`
+	PaymentType     string  `json:"payment_type"`
+	TransactionDate string  `json:"transaction_date"`
 }
