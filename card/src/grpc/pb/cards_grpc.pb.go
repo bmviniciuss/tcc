@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CardsClient interface {
 	GenerateCard(ctx context.Context, in *CreateCardRequest, opts ...grpc.CallOption) (*FullCard, error)
 	GetCardByToken(ctx context.Context, in *GetCardByTokenRequest, opts ...grpc.CallOption) (*Card, error)
+	AuthorizePayment(ctx context.Context, in *AuhtorizePaymentRequest, opts ...grpc.CallOption) (*PaymentAuthorization, error)
 }
 
 type cardsClient struct {
@@ -52,12 +53,22 @@ func (c *cardsClient) GetCardByToken(ctx context.Context, in *GetCardByTokenRequ
 	return out, nil
 }
 
+func (c *cardsClient) AuthorizePayment(ctx context.Context, in *AuhtorizePaymentRequest, opts ...grpc.CallOption) (*PaymentAuthorization, error) {
+	out := new(PaymentAuthorization)
+	err := c.cc.Invoke(ctx, "/cards.Cards/AuthorizePayment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CardsServer is the server API for Cards service.
 // All implementations must embed UnimplementedCardsServer
 // for forward compatibility
 type CardsServer interface {
 	GenerateCard(context.Context, *CreateCardRequest) (*FullCard, error)
 	GetCardByToken(context.Context, *GetCardByTokenRequest) (*Card, error)
+	AuthorizePayment(context.Context, *AuhtorizePaymentRequest) (*PaymentAuthorization, error)
 	mustEmbedUnimplementedCardsServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedCardsServer) GenerateCard(context.Context, *CreateCardRequest
 }
 func (UnimplementedCardsServer) GetCardByToken(context.Context, *GetCardByTokenRequest) (*Card, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCardByToken not implemented")
+}
+func (UnimplementedCardsServer) AuthorizePayment(context.Context, *AuhtorizePaymentRequest) (*PaymentAuthorization, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthorizePayment not implemented")
 }
 func (UnimplementedCardsServer) mustEmbedUnimplementedCardsServer() {}
 
@@ -120,6 +134,24 @@ func _Cards_GetCardByToken_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Cards_AuthorizePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuhtorizePaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CardsServer).AuthorizePayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cards.Cards/AuthorizePayment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CardsServer).AuthorizePayment(ctx, req.(*AuhtorizePaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Cards_ServiceDesc is the grpc.ServiceDesc for Cards service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Cards_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCardByToken",
 			Handler:    _Cards_GetCardByToken_Handler,
+		},
+		{
+			MethodName: "AuthorizePayment",
+			Handler:    _Cards_AuthorizePayment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

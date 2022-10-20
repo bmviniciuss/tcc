@@ -7,13 +7,17 @@ import (
 	"os"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
+	"github.com/go-resty/resty/v2"
 )
 
 type HTTPCardAPI struct {
+	client *resty.Client
 }
 
 func NewHTTPCardAPI() *HTTPCardAPI {
-	return &HTTPCardAPI{}
+	return &HTTPCardAPI{
+		client: resty.New(),
+	}
 }
 
 type CardResponse struct {
@@ -26,6 +30,21 @@ type CardResponse struct {
 	Active          bool   `json:"active"`
 	IsCredit        bool   `json:"is_credit"`
 	IsDebit         bool   `json:"is_debit"`
+}
+
+type PaymentAuthorizationRequest struct {
+	Amount          float64 `json:"amount"`
+	CardToken       string  `json:"card_token"`
+	PaymentType     string  `json:"payment_type"`
+	TransactionDate string  `json:"transaction_date"`
+}
+
+type PaymentAuthorizationResponse struct {
+	Id              string  `json:"id"`
+	Amount          float64 `json:"amount"`
+	Status          string  `json:"status"`
+	TransactionDate string  `json:"transaction_date"`
+	CreateAt        string  `json:"create_at"`
 }
 
 func (c *HTTPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
@@ -54,5 +73,44 @@ func (c *HTTPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
 		Active:          cardResponse.Active,
 		IsCredit:        cardResponse.IsCredit,
 		IsDebit:         cardResponse.IsDebit,
+	}, nil
+}
+
+func (c *HTTPCardAPI) AuthorizePayment(input *payment.PaymentAuthorizationInput) (*payment.PaymentAuthorization, error) {
+	fmt.Println("[HTTPCardAPI] AuthorizePayment")
+	url := fmt.Sprintf("http://%s/api/payment/authorize", os.Getenv("CARD_HOST"))
+
+	requestBody := &PaymentAuthorizationRequest{
+		Amount:          input.Amount,
+		CardToken:       input.CardToken,
+		PaymentType:     input.PaymentType,
+		TransactionDate: input.TransactionDate,
+	}
+
+	response := &PaymentAuthorizationResponse{}
+
+	_, err := c.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Connection", "close").
+		SetBody(requestBody).
+		SetResult(response).
+		Post(url)
+
+	fmt.Printf("%v\n", response)
+
+	if err != nil {
+		fmt.Println("Error = ", err.Error())
+
+		return nil, err
+	}
+
+	fmt.Println("response: ", response.Id)
+
+	return &payment.PaymentAuthorization{
+		Id:              response.Id,
+		Amount:          response.Amount,
+		Status:          response.Status,
+		TransactionDate: response.TransactionDate,
+		CreateAt:        response.CreateAt,
 	}, nil
 }

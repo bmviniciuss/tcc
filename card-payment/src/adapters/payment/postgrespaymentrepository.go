@@ -76,8 +76,8 @@ func (r *postgresPaymentRepository) Create(payment *payment.Payment) error {
 func createPayment(tx pgx.Tx, payment *payment.Payment) error {
 	sql := `
 		INSERT INTO cardpaymentms.payments
-		(id, client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date)
-		VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
+		(id, client_id, payment_type, amount, cardholder_name, card_token, masked_number, payment_date, authorization_id)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id
 	`
 	err := tx.QueryRow(context.TODO(), sql,
 		uuid.New().String(),
@@ -87,15 +87,13 @@ func createPayment(tx pgx.Tx, payment *payment.Payment) error {
 		payment.PaymentInfo.CardholderName,
 		payment.PaymentInfo.CardToken,
 		payment.PaymentInfo.MaskedNumber,
-		payment.PaymentDate).Scan(&payment.Id)
+		payment.PaymentDate,
+		payment.AuthorizationId).Scan(&payment.Id)
 
 	if err != nil {
-		log.Println("Error while creating payment")
-		log.Printf("Error: %s", err.Error())
+		log.Println("Error while creating payment = ", err.Error())
 		return err
 	}
-
-	log.Println("Payment created")
 
 	return nil
 }
@@ -115,11 +113,9 @@ func createPayable(tx pgx.Tx, payment *payment.Payment) error {
 	).Scan(&payment.Payable.Id)
 
 	if err != nil {
-		log.Println("Error while creating payable")
-		log.Printf("Error: %s", err.Error())
+		log.Println("Error while creating payable = ", err.Error())
 		return err
 	}
-	log.Println("Payable Created")
 
 	return nil
 }

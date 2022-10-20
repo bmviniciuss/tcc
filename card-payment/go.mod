@@ -8,13 +8,14 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.6
-	google.golang.org/grpc v1.46.2
+	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.27.1
 )
 
 require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-resty/resty/v2 v2.7.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

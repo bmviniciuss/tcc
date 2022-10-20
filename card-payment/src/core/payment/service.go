@@ -2,6 +2,8 @@ package payment
 
 import (
 	"time"
+
+	"github.com/bmviniciuss/tcc/card-payment/src/constants"
 )
 
 type ProcessPaymentInput struct {
@@ -26,6 +28,7 @@ type Service interface {
 
 type CardAPI interface {
 	GetCardByToken(token string) (*Card, error)
+	AuthorizePayment(input *PaymentAuthorizationInput) (*PaymentAuthorization, error)
 }
 
 type PaymentService struct {
@@ -46,6 +49,7 @@ func (s *PaymentService) Process(input *ProcessPaymentInput) (*Payment, error) {
 	}
 
 	card, err := s.CardAPI.GetCardByToken(input.PaymentInfo.CardToken)
+
 	if err != nil {
 		return nil, ErrFetchingCard
 	}
@@ -58,16 +62,34 @@ func (s *PaymentService) Process(input *ProcessPaymentInput) (*Payment, error) {
 		return nil, ErrInvalidCardTypeForPayment
 	}
 
+	pa := &PaymentAuthorizationInput{
+		Amount:          input.Amount,
+		CardToken:       input.PaymentInfo.CardToken,
+		PaymentType:     s.getPaymentTypeForAuthorizer(input.PaymentType),
+		TransactionDate: time.Now().Format(constants.RFC3399),
+	}
+
+	paymentAuth, err := s.CardAPI.AuthorizePayment(pa)
+
+	if err != nil {
+		return nil, ErrPaymentAuthorization
+	}
+
+	if paymentAuth.Status == "DECLINED" {
+		return nil, ErrPaymentNotAuthorized
+	}
+
 	fee := getPaymentFeeByPaymentType(input.PaymentType)
 
 	payment := &Payment{
-		ClientId:    input.ClientId,
-		Amount:      input.Amount,
-		PaymentType: input.PaymentType,
-		PaymentDate: input.PaymentDate,
+		ClientId:        input.ClientId,
+		Amount:          input.Amount,
+		PaymentType:     input.PaymentType,
+		PaymentDate:     input.PaymentDate,
+		AuthorizationId: paymentAuth.Id,
 		PaymentInfo: PaymentInfo{
 			CardholderName: card.CardholderName,
-			CardToken:      input.PaymentInfo.CardToken,
+			CardToken:      card.Token,
 			MaskedNumber:   card.MaskedNumber,
 		},
 		Payable: Payable{
@@ -94,4 +116,14 @@ func getPaymentFeeByPaymentType(paymentType string) float64 {
 
 func (s *PaymentService) GetPaymentsByClientId(input *GetPaymentsByClientIdInput) ([]Payment, error) {
 	return s.PaymentRepository.GetPaymentsByClientId(input)
+}
+
+func (s *PaymentService) getPaymentTypeForAuthorizer(paymentType string) string {
+	if paymentType == "CREDIT_CARD" {
+		return "CREDIT"
+	} else if paymentType == "DEBIT_CARD" {
+		return "DEBIT"
+	} else {
+		return "UNSUPPORTED"
+	}
 }

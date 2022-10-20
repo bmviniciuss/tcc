@@ -4,6 +4,7 @@ CREATE SCHEMA IF NOT EXISTS cardpaymentms;
 
 CREATE TABLE IF NOT EXISTS cardpaymentms.payments (
   id uuid not null default uuid_generate_v4(),
+  authorization_id uuid not null,
   client_id uuid not null,
   payment_type varchar(30) not null,
   amount float not null,

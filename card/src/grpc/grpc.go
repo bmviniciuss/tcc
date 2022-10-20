@@ -3,30 +3,30 @@ package grpccard
 import (
 	"context"
 	"log"
+	"time"
 
-	postgrescardrepository "github.com/bmviniciuss/tcc/card/src/adapter/card"
-	carddetailsgenerator "github.com/bmviniciuss/tcc/card/src/adapter/carddetails"
 	"github.com/bmviniciuss/tcc/card/src/core/card"
+	"github.com/bmviniciuss/tcc/card/src/core/payment"
+	"github.com/bmviniciuss/tcc/card/src/factories"
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
-
-func newCardService(db *pgxpool.Pool) *card.CardService {
-	cardRepository := postgrescardrepository.NewPostgresCardRepository(db)
-	cardDetailsGenerator := carddetailsgenerator.NewCardDetailsGenerator()
-	cardService := card.NewCardService(cardDetailsGenerator, cardRepository)
-	return cardService
-}
 
 type CardServiceServer struct {
 	pb.UnimplementedCardsServer
-	CardService *card.CardService
+	CardService    *card.CardService
+	paymentService *payment.PaymentService
 }
 
 func NewCardServiceServer(db *pgxpool.Pool) *CardServiceServer {
-	cardService := newCardService(db)
+	cardService := factories.CardServiceFactory(db)
+	paymentService := factories.PaymentServiceFactory(db)
+
 	return &CardServiceServer{
-		CardService: cardService,
+		CardService:    cardService,
+		paymentService: paymentService,
 	}
 }
 
@@ -89,4 +89,37 @@ func (s *CardServiceServer) GetCardByToken(ctx context.Context, in *pb.GetCardBy
 		IsCredit:        card.IsCredit,
 		IsDebit:         card.IsDebit,
 	}, nil
+}
+
+func (s *CardServiceServer) AuthorizePayment(ctx context.Context, in *pb.AuhtorizePaymentRequest) (*pb.PaymentAuthorization, error) {
+	log.Println("[gRPC] AuthorizePayment called")
+	f := "2006-01-02T15:04:05.000Z07:00"
+
+	transctionDate, err := time.Parse(f, in.GetTrasanctionDate())
+
+	if err != nil {
+		return &pb.PaymentAuthorization{}, status.Error(codes.InvalidArgument, codes.InvalidArgument.String())
+	}
+
+	p := &payment.CreatePaymentAuthorization{
+		Amount:          in.GetAmount(),
+		CardToken:       in.GetCardToken(),
+		PaymentType:     in.GetPaymentType(),
+		TransactionDate: transctionDate,
+	}
+
+	authResult, err := s.paymentService.Authorize(p)
+
+	if err != nil {
+		return &pb.PaymentAuthorization{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pb.PaymentAuthorization{
+		Id:              authResult.Id,
+		Amount:          authResult.Amount,
+		Status:          authResult.Status,
+		TransactionDate: authResult.TransactionDate.UTC().Format(f),
+		CreatedAt:       authResult.CreatedAt.UTC().Format(f),
+	}, nil
+
 }

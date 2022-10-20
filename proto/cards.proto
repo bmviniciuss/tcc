@@ -7,6 +7,7 @@ package cards;
 service Cards {
   rpc GenerateCard(CreateCardRequest) returns (FullCard) {}
   rpc GetCardByToken(GetCardByTokenRequest) returns (Card) {}
+  rpc AuthorizePayment(AuhtorizePaymentRequest) returns (PaymentAuthorization) {}
 }
 
 message CreateCardRequest {
@@ -44,4 +45,19 @@ message Card {
   bool   active = 7;
   bool   is_credit = 8;
   bool   is_debit = 9;
+}
+
+message AuhtorizePaymentRequest {
+  double amount = 1;
+  string cardToken = 2;
+  string paymentType = 3;
+  string trasanctionDate = 4;
+}
+
+message PaymentAuthorization {
+  string id = 1;
+  double amount = 2;
+  string status = 3;
+  string transactionDate = 4;
+  string createdAt = 5;
 }
