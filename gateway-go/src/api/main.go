@@ -7,15 +7,14 @@ import (
 	"os"
 
 	"github.com/bmviniciuss/gateway/src/api/router"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
+	// err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	grpcEnabled := os.Getenv("GRPC_ENABLED") == "true"
 

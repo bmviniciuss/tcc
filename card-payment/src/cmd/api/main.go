@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math"
 	"net"
 	"net/http"
 	"os"
@@ -14,17 +13,16 @@ import (
 	"github.com/bmviniciuss/tcc/card-payment/src/grpc/pb"
 	api "github.com/bmviniciuss/tcc/card-payment/src/http"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	err := godotenv.Load()
+	// err := godotenv.Load()
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	dbConn := db.ConnectDB()
 	defer dbConn.Close()
@@ -40,8 +38,6 @@ func main() {
 }
 
 func runGrpc(db *pgxpool.Pool, appPort string) {
-	log.Println("MAX: ", math.MaxInt32)
-
 	gs := grpc.NewServer()
 	paymentService := factories.NewPaymentService(db)
 	pb.RegisterCardPaymentServer(gs, grpcpaymentserver.NewCardPaymentServer(paymentService))
