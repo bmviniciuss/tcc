@@ -6,7 +6,7 @@ const testConfig = {
   id: "c4e77cc4-0103-4abc-ac9e-da0f78901f4e",
   name: "create-card-payment",
   vus: 50,
-  duration: '1m',
+  duration: '5m',
   executedAt: new Date().toISOString()
 }
 
@@ -14,8 +14,13 @@ const GATEWAY_HOST = 'localhost:5000'
 
 export const options = {
   vus: testConfig.vus,
-  duration: testConfig.duration
+  duration: testConfig.duration,
+  summaryTrendStats: ["min", "med", "avg", "max", "p(90)", "p(95)", "p(99)" ],
+  thresholds: {
+    checks: [{ threshold: 'rate>0.99', abortOnFail: true }],
+  },
 }
+
 
 
 export function setup() {
