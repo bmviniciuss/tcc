@@ -31,7 +31,6 @@ func NewCardServiceServer(db *pgxpool.Pool) *CardServiceServer {
 }
 
 func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardRequest) (*pb.FullCard, error) {
-	log.Println("[gRPC] GenerateCard called")
 
 	input := card.GenerateCardServiceInput{
 		CardholderName: in.GetCardholderName(),
@@ -45,8 +44,6 @@ func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardR
 		log.Println("[gRPC] Error generating card: ", err)
 		return nil, err
 	}
-
-	log.Println("[gRPC] Card generated. Returning results")
 
 	return &pb.FullCard{
 		Id:              card.Id,
@@ -64,19 +61,14 @@ func (s *CardServiceServer) GenerateCard(ctx context.Context, in *pb.CreateCardR
 }
 
 func (s *CardServiceServer) GetCardByToken(ctx context.Context, in *pb.GetCardByTokenRequest) (*pb.Card, error) {
-	log.Println("[gRPC] GetCardByToken called")
 	token := in.GetToken()
-	log.Println("[gRPC] Token: ", token)
 
-	log.Println("[gRPC] Calling card service to get card by token")
 	card, err := s.CardService.GetByToken(token)
 
 	if err != nil {
 		log.Println("[gRPC] Error getting card by token: ", err)
 		return nil, err
 	}
-
-	log.Println("[gRPC] Card found. Returning results")
 
 	return &pb.Card{
 		Id:              card.Id,
@@ -92,7 +84,6 @@ func (s *CardServiceServer) GetCardByToken(ctx context.Context, in *pb.GetCardBy
 }
 
 func (s *CardServiceServer) AuthorizePayment(ctx context.Context, in *pb.AuhtorizePaymentRequest) (*pb.PaymentAuthorization, error) {
-	log.Println("[gRPC] AuthorizePayment called")
 	f := "2006-01-02T15:04:05.000Z07:00"
 
 	transctionDate, err := time.Parse(f, in.GetTrasanctionDate())

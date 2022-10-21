@@ -2,6 +2,7 @@ package postgrescardrepository
 
 import (
 	"context"
+	"log"
 
 	"github.com/bmviniciuss/tcc/card/src/core/card"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -45,6 +46,7 @@ func (r *postgresCardRepository) Generate(card *card.Card) error {
 	err := r.Db.QueryRow(context.Background(), insertSQL, card.Id, card.Number, card.MaskedNumber, card.Cvv, card.CardholderName, card.Token, card.ExpirationYear, card.ExpirationMonth, card.Active, card.IsDebit, card.IsCredit).Scan(&id)
 
 	if err != nil {
+		log.Println("Generate Error = ", err.Error())
 		return err
 	}
 
@@ -71,6 +73,7 @@ func (r *postgresCardRepository) GetByToken(token string) (*card.Card, error) {
 	)
 
 	if err != nil {
+		log.Println("GetByToken Error = ", err.Error())
 		return nil, err
 	}
 

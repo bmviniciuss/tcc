@@ -2,6 +2,7 @@ package postgrespaymentrepository
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/bmviniciuss/tcc/card/src/core/payment"
@@ -43,6 +44,7 @@ func (r *postgresPaymentRepository) Create(paymentAuthorization *payment.Payment
 	err := r.Db.QueryRow(context.Background(), insertSQL, paymentAuthorization.Amount, paymentAuthorization.Status, paymentAuthorization.CardId, paymentAuthorization.TransactionDate).Scan(&id, &createAt)
 
 	if err != nil {
+		log.Println("[PostgresPaymentAuthorization.Create] = ", err.Error())
 		return err
 	}
 

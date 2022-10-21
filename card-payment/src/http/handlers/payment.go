@@ -53,7 +53,6 @@ type PaymentInfoResponse struct {
 
 func handleProcessPayment(paymentService payment.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("ProcessPayment: Process started")
 
 		w.Header().Set("Content-Type", "application/json")
 
@@ -121,7 +120,6 @@ type GetPaymentsByClientIdReponse struct {
 
 func handleGetPaymentsByClientId(paymentService payment.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("GetPaymentsByClientId: Process started")
 		w.Header().Set("Content-Type", "application/json")
 
 		clientId := r.URL.Query().Get("client_id")

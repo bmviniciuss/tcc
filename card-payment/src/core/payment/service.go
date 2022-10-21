@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"log"
 	"time"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/constants"
@@ -72,6 +73,7 @@ func (s *PaymentService) Process(input *ProcessPaymentInput) (*Payment, error) {
 	paymentAuth, err := s.CardAPI.AuthorizePayment(pa)
 
 	if err != nil {
+		log.Println("Error = ", err.Error())
 		return nil, ErrPaymentAuthorization
 	}
 

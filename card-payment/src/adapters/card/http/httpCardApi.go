@@ -3,6 +3,7 @@ package httpcardapi
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -15,8 +16,14 @@ type HTTPCardAPI struct {
 }
 
 func NewHTTPCardAPI() *HTTPCardAPI {
+	r := resty.New()
+	// t := http.DefaultTransport.(*http.Transport).Clone()
+
+	// t.MaxIdleConnsPerHost = 100
+
+	// r.SetTransport(t)
 	return &HTTPCardAPI{
-		client: resty.New(),
+		client: r,
 	}
 }
 
@@ -52,6 +59,7 @@ func (c *HTTPCardAPI) GetCardByToken(token string) (*payment.Card, error) {
 	resp, err := http.Get(url)
 
 	if err != nil {
+		log.Println("Error = ", err.Error())
 		return nil, err
 	}
 
@@ -91,7 +99,6 @@ func (c *HTTPCardAPI) AuthorizePayment(input *payment.PaymentAuthorizationInput)
 
 	_, err := c.client.R().
 		SetHeader("Content-Type", "application/json").
-		SetHeader("Connection", "close").
 		SetBody(requestBody).
 		SetResult(response).
 		Post(url)
@@ -103,8 +110,6 @@ func (c *HTTPCardAPI) AuthorizePayment(input *payment.PaymentAuthorizationInput)
 
 		return nil, err
 	}
-
-	fmt.Println("response: ", response.Id)
 
 	return &payment.PaymentAuthorization{
 		Id:              response.Id,
