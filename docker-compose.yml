@@ -1,18 +1,26 @@
 version: '3.1'
 
 services:
-  card-db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: card-ms
+  gateway:
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65535
+      - net.ipv4.tcp_tw_reuse=1
+      - net.ipv4.tcp_timestamps=1
+    restart: on-failure:10
+    container_name: gateway-api
+    depends_on:
+      - card
+      - card-payment
+    build:
+      context: ./gateway-go
+      dockerfile: Dockerfile.prod
     ports:
-      - "5432:5432"
-    volumes:
-      - card_db_data:/var/lib/postgresql/data
-      - ./card/src/migrations/01-create-cards-table.sql:/docker-entrypoint-initdb.d/01-create-cards-table.sql
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - CARD_HOST=card:5000
+      - CARD_PAYMENT_HOST=card-payment:5000
+      - GRPC_ENABLED
     networks:
       - base
 
@@ -36,8 +44,12 @@ services:
       - GRPC_ENABLED
     networks:
       - base
-  
+
   card-payment:
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65535
+      - net.ipv4.tcp_tw_reuse=1
+      - net.ipv4.tcp_timestamps=1
     restart: on-failure:10
     container_name: card-payment-api
     depends_on:
@@ -58,7 +70,22 @@ services:
       - GRPC_ENABLED
     networks:
       - base
-  
+
+  card-db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: card-ms
+    ports:
+      - "5432:5432"
+    volumes:
+      - card_db_data:/var/lib/postgresql/data
+      - ./card/src/migrations/01-create-cards-table.sql:/docker-entrypoint-initdb.d/01-create-cards-table.sql
+    networks:
+      - base
+
   card-payment-db:
     image: postgres
     restart: always
@@ -73,28 +100,10 @@ services:
       - ./card-payment/src/migrations/01-create-tables.sql:/docker-entrypoint-initdb.d/01-create-tables.sql
     networks:
       - base
-  
-  gateway:
-    restart: on-failure:10
-    container_name: gateway-api
-    depends_on:
-      - card
-      - card-payment
-    build:
-      context: ./gateway-go
-      dockerfile: Dockerfile.prod
-    ports:
-      - "5000:5000"
-    environment:
-      - PORT=5000
-      - CARD_HOST=card:5000
-      - CARD_PAYMENT_HOST=card-payment:5000
-      - GRPC_ENABLED
-    networks:
-      - base
 
 networks:
   base:
+
 
 volumes:
   card_db_data:
