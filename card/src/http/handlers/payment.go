@@ -30,7 +30,6 @@ func (c PaymentController) Route(r chi.Router) {
 
 func handleAuthorizePayment(paymentService *payment.PaymentService) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		log.Println("POST /authorize")
 
 		rw.Header().Set("Content-Type", "application/json")
 		validate := validator.New()
@@ -51,7 +50,6 @@ func handleAuthorizePayment(paymentService *payment.PaymentService) func(rw http
 			return
 		}
 
-		log.Println("[handleAuthorizePayment] Validating request body")
 		err := validate.Struct(createPaymentAuthorization)
 
 		if err != nil {
@@ -68,8 +66,6 @@ func handleAuthorizePayment(paymentService *payment.PaymentService) func(rw http
 			json.NewEncoder(rw).Encode(map[string]string{"error": err.Error()})
 			return
 		}
-
-		log.Println("[handleAuthorizePayment] Generating card")
 
 		paymentAuthorization, err := paymentService.Authorize(&payment.CreatePaymentAuthorization{
 			Amount:          createPaymentAuthorization.Amount,

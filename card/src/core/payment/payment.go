@@ -37,7 +37,6 @@ func NewPaymentService(cadRepository card.CardRepository, paymentAuthorizationRe
 }
 
 func (p *PaymentService) Authorize(input *CreatePaymentAuthorization) (*PaymentAuthorization, error) {
-	log.Println("[PaymentService] Auhtorizing Payment")
 
 	if input.PaymentType != "CREDIT" && input.PaymentType != "DEBIT" {
 		return &PaymentAuthorization{}, errors.New("Invalid Payment Type")
@@ -53,8 +52,6 @@ func (p *PaymentService) Authorize(input *CreatePaymentAuthorization) (*PaymentA
 	if card.Id == "" {
 		return &PaymentAuthorization{}, errors.New("Card Not Found")
 	}
-
-	log.Println("Card found")
 
 	paymentAuthorization := &PaymentAuthorization{
 		Amount:          input.Amount,

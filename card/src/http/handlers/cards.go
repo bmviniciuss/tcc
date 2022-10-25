@@ -47,13 +47,11 @@ type CreateCardRequest struct {
 
 func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		log.Println("Calling POST /cards")
 
 		rw.Header().Set("Content-Type", "application/json")
 		validate := validator.New()
 		var createCardRequest CreateCardRequest
 
-		log.Println("[handleCreateCard] Decoding request body")
 		if err := json.NewDecoder(r.Body).Decode(&createCardRequest); err != nil {
 			log.Println("[handleCreateCard] Error decoding request body:", err)
 			rw.WriteHeader(http.StatusBadRequest)
@@ -69,7 +67,6 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 			return
 		}
 
-		log.Println("[handleCreateCard] Validating request body")
 		err := validate.Struct(createCardRequest)
 
 		if err != nil {
@@ -93,7 +90,6 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 			return
 		}
 
-		log.Println("[handleCreateCard] Card generated")
 		presentationCard := parseCardToPresentationCard(card)
 		rw.WriteHeader(http.StatusOK)
 		json.NewEncoder(rw).Encode(presentationCard)
@@ -103,9 +99,7 @@ func handleCreateCard(cardService *card.CardService) func(rw http.ResponseWriter
 func handleGetCard(cardService *card.CardService) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Content-Type", "application/json")
-		log.Println("Calling GET /cards")
 		cardToken := r.URL.Query().Get("token")
-		log.Println("[handleGetCard] Getting card with token:", cardToken)
 
 		if cardToken == "" {
 			log.Println("[handleGetCard] Error getting card: token is empty")
@@ -114,7 +108,6 @@ func handleGetCard(cardService *card.CardService) func(rw http.ResponseWriter, r
 			return
 		}
 
-		log.Println("[handleGetCard] Getting card")
 		card, err := cardService.GetByToken(cardToken)
 
 		if err != nil {
@@ -124,7 +117,6 @@ func handleGetCard(cardService *card.CardService) func(rw http.ResponseWriter, r
 			return
 		}
 
-		log.Println("[handleGetCard] Card found")
 		presentationCard := parseCardToPresentationCard(card)
 
 		rw.WriteHeader(http.StatusOK)

@@ -58,7 +58,6 @@ func NewCardService(cardDetailsGenerator carddetails.GeneratorService, repositor
 }
 
 func (s *CardService) Generate(generateCardDTO *GenerateCardServiceInput) (*Card, error) {
-	log.Println("[CardService] Generating card")
 	cardDetails, err := s.cardDetailsGenerator.Generate()
 
 	if err != nil {
@@ -94,7 +93,6 @@ func (s *CardService) Generate(generateCardDTO *GenerateCardServiceInput) (*Card
 }
 
 func (s *CardService) GetByToken(token string) (*Card, error) {
-	log.Println("[CardService] Getting card by token")
 	card, err := s.cardRepository.GetByToken(token)
 
 	if err != nil {
