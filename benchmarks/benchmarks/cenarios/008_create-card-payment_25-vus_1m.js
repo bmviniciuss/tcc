@@ -6,7 +6,7 @@ const testConfig = {
   id: "43631c23-72c8-4ce4-ae7d-b50cbb5e56e7",
   name: "create-card-payment",
   vus: 25,
-  duration: '5m',
+  duration: '1m',
   executedAt: new Date().toISOString()
 }
 
@@ -19,7 +19,7 @@ export const options = {
   thresholds: {
     checks: [{ threshold: 'rate>0.99', abortOnFail: true }],
   },
-  discardResponseBodies: true
+  discardResponseBodies: false
 }
 
 

@@ -6,7 +6,7 @@ const testConfig = {
   id: "8244654e-51ff-481d-bd43-bbc86715a505",
   name: "create-card",
   vus: 1,
-  duration: '5m',
+  duration: '1m',
   executedAt: new Date().toISOString()
 }
 
