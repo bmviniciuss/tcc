@@ -21,6 +21,7 @@ services:
       - CARD_HOST=card:5000
       - CARD_PAYMENT_HOST=card-payment:5000
       - GRPC_ENABLED
+      - GOMAXPROCS=8
     networks:
       - base
 
@@ -42,6 +43,7 @@ services:
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - GRPC_ENABLED
+      - GOMAXPROCS=8
     networks:
       - base
 
@@ -68,6 +70,7 @@ services:
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - GRPC_ENABLED
+      - GOMAXPROCS=8
     networks:
       - base
 
