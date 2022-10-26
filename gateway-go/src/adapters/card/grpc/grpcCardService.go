@@ -12,7 +12,7 @@ import (
 )
 
 type GRPCardAPI struct {
-	Conn *grpc.ClientConn
+	client pb.CardsClient
 }
 
 func NewGRPCardAPI() *GRPCardAPI {
@@ -24,19 +24,18 @@ func NewGRPCardAPI() *GRPCardAPI {
 	}
 
 	return &GRPCardAPI{
-		Conn: grpcConn,
+		client: pb.NewCardsClient(grpcConn),
 	}
 }
 
 func (c *GRPCardAPI) CreateCard(input *card.CreateCardRequest) (*card.PresentationCard, error) {
-	client := pb.NewCardsClient(c.Conn)
 	req := &pb.CreateCardRequest{
 		CardholderName: input.CardholderName,
 		IsCredit:       *input.IsCredit,
 		IsDebit:        *input.IsDebit,
 	}
 
-	resp, err := client.GenerateCard(context.Background(), req)
+	resp, err := c.client.GenerateCard(context.Background(), req)
 
 	if err != nil {
 		log.Println("[GRPCardService] GenerateCard error: ", err)

@@ -20,7 +20,6 @@ func NewGRPCCardPaymentService(conn *grpc.ClientConn) *GRPCCardPaymentService {
 }
 
 func (h *GRPCCardPaymentService) CreatePayment(payment *card_payment.CardPayment) error {
-	log.Println("[GRPCCardPaymentService] Process started")
 
 	req := &pb.ProcessCardPaymentInput{
 		ClientId:    payment.ClientId,
@@ -45,7 +44,6 @@ func (h *GRPCCardPaymentService) CreatePayment(payment *card_payment.CardPayment
 }
 
 func (h *GRPCCardPaymentService) GetPaymentsByClientId(clientId string) (*card_payment.CardPaymentsResponse, error) {
-	log.Println("[GRPCCardPaymentService.GetPaymentsByClientId]: Process started")
 	result := &card_payment.CardPaymentsResponse{}
 	input := &pb.GetPaymentsByClientIdRequest{
 		ClientId: clientId,

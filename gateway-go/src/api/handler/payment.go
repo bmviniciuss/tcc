@@ -109,7 +109,6 @@ func createCardPayment(cardPaymentService card_payment.Service) http.HandlerFunc
 
 func getCardPaymentsByClientId(cardPaymentService card_payment.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("GetPaymentsByClientId: Process started")
 		w.Header().Set("Content-Type", "application/json")
 
 		clientId := r.URL.Query().Get("client_id")
