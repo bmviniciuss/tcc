@@ -1,14 +1,15 @@
 package factories
 
 import (
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"os"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 
 	grpccardapi "github.com/bmviniciuss/tcc/card-payment/src/adapters/card/grpc"
 	httpcardapi "github.com/bmviniciuss/tcc/card-payment/src/adapters/card/http"
 
-	postgrespaymentrepository "github.com/bmviniciuss/tcc/card-payment/src/adapters/payment"
+	memorypaymentrepository "github.com/bmviniciuss/tcc/card-payment/src/adapters/payment/memory"
 	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,5 +36,5 @@ func NewCardApi() payment.CardAPI {
 }
 
 func NewPaymentService(db *pgxpool.Pool) payment.Service {
-	return payment.NewPaymentService(NewCardApi(), postgrespaymentrepository.NewPostgresPaymentRepository(db))
+	return payment.NewPaymentService(NewCardApi(), memorypaymentrepository.NewPaymentRepository())
 }
