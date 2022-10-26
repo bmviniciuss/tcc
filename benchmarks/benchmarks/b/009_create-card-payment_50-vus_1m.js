@@ -3,9 +3,9 @@ import { check } from 'k6'
 import { generateData } from '/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/helpers.js'
 
 const testConfig = {
-  id: "43631c23-72c8-4ce4-ae7d-b50cbb5e56e7",
+  id: "c4e77cc4-0103-4abc-ac9e-da0f78901f4e",
   name: "create-card-payment",
-  vus: 25,
+  vus: 50,
   duration: '5m',
   executedAt: new Date().toISOString()
 }
@@ -19,7 +19,9 @@ export const options = {
   thresholds: {
     checks: [{ threshold: 'rate>0.99', abortOnFail: true }],
   },
+  discardResponseBodies: true
 }
+
 
 
 export function setup() {
@@ -41,6 +43,7 @@ export function setup() {
   return { card: res.json() };
 }
 
+
 export default function ({card}) {
   const url = `http://${GATEWAY_HOST}/api/payments/card`
   const payload = JSON.stringify({
@@ -49,7 +52,7 @@ export default function ({card}) {
     "payment_date": "2022-07-25T19:52:42.972Z",
     "amount": 1000,
     "payment_info": {
-      "card_token": card.token
+        "card_token": card.token
     }
 })
 

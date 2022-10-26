@@ -19,6 +19,7 @@ export const options = {
   thresholds: {
     checks: [{ threshold: 'rate>0.99', abortOnFail: true }],
   },
+  discardResponseBodies: true
 }
 
 export function setup() {
