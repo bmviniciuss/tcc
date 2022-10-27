@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import { PrismaClient } from '@prisma/client'
 import { parse } from 'json2csv'
 import * as fs from 'node:fs/promises'
@@ -25,7 +25,9 @@ export default class ResultsCSVGEnerator extends Command {
     '$ tcc-cli results csv-generator'
   ]
 
-  static flags = {}
+  static flags = {
+
+  }
 
   static args = [
     { name: 'path', description: 'Path to the file that will be generated', required: true }

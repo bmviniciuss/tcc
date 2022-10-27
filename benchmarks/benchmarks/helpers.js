@@ -9,10 +9,10 @@ export function getNowTimestamp () {
   return `${now.getUTCFullYear()}${format2D(now.getUTCMonth() + 1)}${format2D(now.getDate())}${format2D(now.getHours())}${format2D(now.getMinutes())}${format3D(now.getMilliseconds())}`
 }
 
-export function getBenchmarkSummaryFileName (testName, isGRPC) {
+export function getBenchmarkSummaryFileName (testName, isGRPC, basePath = "/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/results") {
   const mode = isGRPC ? 'grpc' : 'http'
   const timestamp = getNowTimestamp()
-  return `/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/results/${timestamp}-${testName}-${mode}.json`
+  return `${basePath}/${timestamp}-${testName}-${mode}.json`
 }
 
 export function generateData (fileName, testConfig, data) {
@@ -27,7 +27,7 @@ export function generateData (fileName, testConfig, data) {
     }
   }
 
-  const summaryOutputFileName = getBenchmarkSummaryFileName(fileName, IS_GRPC)
+  const summaryOutputFileName = getBenchmarkSummaryFileName(fileName, IS_GRPC, __ENV.OUT_PATH)
 
   data.metadata = { type, testConfig }
   return {
