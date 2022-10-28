@@ -18,13 +18,14 @@ export default class ResultsInjest extends Command {
 
   static args = [
     { name: 'path', description: 'Path that contains results to be injests.', required: true },
-    { name: 'outPath', description: 'destination file', required: true }
+    { name: 'outPath', description: 'destination result path', required: true }
   ]
 
   async run (): Promise<void> {
     const benchmarksMap = new Map(benchmarks.map((b) => [b.id, b]))
     const { args } = await this.parse(ResultsInjest)
     const resultsPath = this.getResultsPath(args)
+
     this.log(`Reading results from ${resultsPath}`)
 
     const files = await fs.readdir(resultsPath)
@@ -76,11 +77,12 @@ export default class ResultsInjest extends Command {
       index++
     }
 
+    const resultFilename = `${resultsPath.split('/').pop()?.trim()}.csv`
+    const outputPath = path.resolve(process.cwd(), path.join(args.outPath, resultFilename))
     const csv = parse(data, {
       transforms: [transforms.flatten({ separator: '_' })]
     })
-    const absPath = path.resolve(process.cwd(), args.outPath)
-    await fs.writeFile(absPath, csv, { encoding: 'utf8' })
+    await fs.writeFile(outputPath, csv, { encoding: 'utf8' })
   }
 
   private getResultsPath (args: OutputArgs): string {
