@@ -24,7 +24,8 @@ export default class BenchmarksInjest extends Command {
     grpc: Flags.boolean({}),
     rest: Flags.boolean({}),
     createCard: Flags.boolean({}),
-    createCardPayment: Flags.boolean({})
+    createCardPayment: Flags.boolean({}),
+    useDb: Flags.boolean({})
   }
 
   static args = [
@@ -36,6 +37,7 @@ export default class BenchmarksInjest extends Command {
   async run (): Promise<void> {
     const { args, flags } = await this.parse(BenchmarksInjest)
     const values = this.getGrpcEnabledValue(flags)
+    const USE_DB = flags?.useDb ?? false
 
     const filesPath = this.getFilePath(args)
 
@@ -54,7 +56,7 @@ export default class BenchmarksInjest extends Command {
     })
 
     const composePath = path.resolve(process.cwd(), args.composePath)
-    const outDate = format(new Date(), 'yyyy-MM-dd-HH-mm')
+    const outDate = format(new Date(), 'yyyy-MM-dd-HH-mm-ss')
     const outPath = path.resolve(process.cwd(), args.outPath, outDate)
 
     await fs.mkdir(outPath).catch(() => {
@@ -63,22 +65,22 @@ export default class BenchmarksInjest extends Command {
     })
 
     console.log({
-      args, flags, values, files, composePath, outPath
+      args, flags, values, files, composePath, outPath, USE_DB
     })
 
     for (const GRPC_ENABLED of values) {
-      cp.spawnSync('docker compose -f ../docker-compose.yml down -v', { stdio: 'inherit', shell: true })
+      cp.spawnSync(`docker compose -f ${composePath} down -v`, { stdio: 'inherit', shell: true })
       cp.spawnSync('sleep 2', { stdio: 'inherit', shell: true })
       for (const file of files) {
         this.log(`Processing file ${file} with GRPC_ENABLED=${GRPC_ENABLED}`)
         const filePath = path.join(filesPath, file)
         console.log(filePath)
-        cp.spawnSync(`GRPC_ENABLED=${GRPC_ENABLED} docker compose -f ../docker-compose.yml up -d`, { stdio: 'inherit', shell: true })
+        cp.spawnSync(`GRPC_ENABLED=${GRPC_ENABLED} USE_DB=${USE_DB} docker compose -f ${composePath} up -d`, { stdio: 'inherit', shell: true })
         cp.spawnSync('sleep 5', { stdio: 'inherit', shell: true })
         cp.spawnSync(`k6 run ${filePath} -e GENERATE_SUMMARY=true -e GRPC_ENABLED=${GRPC_ENABLED} -e OUT_PATH=${outPath}`, { stdio: 'inherit', shell: true })
         cp.spawnSync('echo', { stdio: 'inherit', shell: true })
         cp.spawnSync('sleep 5', { stdio: 'inherit', shell: true })
-        cp.spawnSync('docker compose -f ../docker-compose.yml down -v', { stdio: 'inherit', shell: true })
+        cp.spawnSync(`docker compose -f ${composePath} down -v`, { stdio: 'inherit', shell: true })
         cp.spawnSync('sleep 5', { stdio: 'inherit', shell: true })
       }
     }
