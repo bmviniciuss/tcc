@@ -9,15 +9,17 @@ export function getNowTimestamp () {
   return `${now.getUTCFullYear()}${format2D(now.getUTCMonth() + 1)}${format2D(now.getDate())}${format2D(now.getHours())}${format2D(now.getMinutes())}${format3D(now.getMilliseconds())}`
 }
 
-export function getBenchmarkSummaryFileName (testName, isGRPC, basePath = "/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/results") {
+export function getBenchmarkSummaryFileName (testName, isGRPC, useDatabase, basePath = "/home/bmviniciuss/Repos/tcc/benchmarks/benchmarks/results") {
   const mode = isGRPC ? 'grpc' : 'http'
   const timestamp = getNowTimestamp()
-  return `${basePath}/${timestamp}-${testName}-${mode}.json`
+  const dbMode = useDatabase ? "db" : "memory"
+  return `${basePath}/${timestamp}-${testName}-${mode}-${dbMode}.json`
 }
 
 export function generateData (fileName, testConfig, data) {
   const GENERATE_SUMMARY = __ENV.GENERATE_SUMMARY === 'true'
   const IS_GRPC = __ENV.GRPC_ENABLED === 'true'
+  const USE_DB = __ENV.USE_DB === 'true'
   const type = IS_GRPC ? 'GRPC' : 'REST'
 
   if (!GENERATE_SUMMARY) {
@@ -27,9 +29,9 @@ export function generateData (fileName, testConfig, data) {
     }
   }
 
-  const summaryOutputFileName = getBenchmarkSummaryFileName(fileName, IS_GRPC, __ENV.OUT_PATH)
+  const summaryOutputFileName = getBenchmarkSummaryFileName(fileName, IS_GRPC, USE_DB, __ENV.OUT_PATH)
 
-  data.metadata = { type, testConfig }
+  data.metadata = { type, testConfig, useDatabase: USE_DB }
   return {
     stdout: textSummary(data, { indent: ' ', enableColors: true }),
     [`${summaryOutputFileName}`]: JSON.stringify(data)
