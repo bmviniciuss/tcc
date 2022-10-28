@@ -8,6 +8,8 @@ import (
 	"os"
 
 	"github.com/bmviniciuss/tcc/card/src/adapter/db"
+	"github.com/bmviniciuss/tcc/card/src/core/card"
+	"github.com/bmviniciuss/tcc/card/src/core/payment"
 	"github.com/bmviniciuss/tcc/card/src/factories"
 	grpccard "github.com/bmviniciuss/tcc/card/src/grpc"
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
@@ -29,19 +31,22 @@ func main() {
 
 	grpcEnabled := os.Getenv("GRPC_ENABLED")
 
+	cardService := factories.CardServiceFactory(db)
+	paymentService := factories.PaymentServiceFactory(db)
+
 	if grpcEnabled == "true" {
-		runGRPC(db)
+		runGRPC(db, cardService, paymentService)
 	} else {
-		runHTTP(db)
+		runHTTP(db, cardService, paymentService)
 	}
 }
 
-func runGRPC(db *pgxpool.Pool) {
+func runGRPC(db *pgxpool.Pool, cardService *card.CardService, paymentService *payment.PaymentService) {
 	log.Println("[gRPC] Starting gRPC server...")
 
 	grpcPort := os.Getenv("PORT")
 	grpcServer := grpc.NewServer()
-	pb.RegisterCardsServer(grpcServer, grpccard.NewCardServiceServer(db))
+	pb.RegisterCardsServer(grpcServer, grpccard.NewCardServiceServer(db, cardService, paymentService))
 	lis, err := net.Listen("tcp", ":"+grpcPort)
 
 	if err != nil {
@@ -54,13 +59,9 @@ func runGRPC(db *pgxpool.Pool) {
 	}
 }
 
-func runHTTP(db *pgxpool.Pool) {
+func runHTTP(db *pgxpool.Pool, cardService *card.CardService, paymentService *payment.PaymentService) {
 	log.Println("[HTTP] Starting HTTP server...")
-
 	appPort := os.Getenv("PORT")
-	cardService := factories.CardServiceFactory(db)
-	paymentService := factories.PaymentServiceFactory(db)
-
 	mux := api.NewApi(cardService, paymentService)
 
 	server := http.Server{

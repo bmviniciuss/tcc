@@ -7,7 +7,6 @@ import (
 
 	"github.com/bmviniciuss/tcc/card/src/core/card"
 	"github.com/bmviniciuss/tcc/card/src/core/payment"
-	"github.com/bmviniciuss/tcc/card/src/factories"
 	"github.com/bmviniciuss/tcc/card/src/grpc/pb"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc/codes"
@@ -20,10 +19,7 @@ type CardServiceServer struct {
 	paymentService *payment.PaymentService
 }
 
-func NewCardServiceServer(db *pgxpool.Pool) *CardServiceServer {
-	cardService := factories.CardServiceFactory(db)
-	paymentService := factories.PaymentServiceFactory(db)
-
+func NewCardServiceServer(db *pgxpool.Pool, cardService *card.CardService, paymentService *payment.PaymentService) *CardServiceServer {
 	return &CardServiceServer{
 		CardService:    cardService,
 		paymentService: paymentService,

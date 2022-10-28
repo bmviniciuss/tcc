@@ -8,7 +8,7 @@ import (
 type memoryCardRepository struct {
 }
 
-func NewPostgresCardRepository() *memoryCardRepository {
+func NewMemoryCardRepository() *memoryCardRepository {
 	return &memoryCardRepository{}
 }
 

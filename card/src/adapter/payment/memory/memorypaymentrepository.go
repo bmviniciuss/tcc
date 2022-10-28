@@ -10,7 +10,7 @@ import (
 type memoryPaymentRepository struct {
 }
 
-func NewPostgresPaymentRepository() *memoryPaymentRepository {
+func NewMemoryPaymentRepository() *memoryPaymentRepository {
 	return &memoryPaymentRepository{}
 }
 
