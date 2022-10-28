@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/bmviniciuss/tcc/card-payment/src/adapters/db"
+	"github.com/bmviniciuss/tcc/card-payment/src/core/payment"
 	"github.com/bmviniciuss/tcc/card-payment/src/factories"
 	grpcpaymentserver "github.com/bmviniciuss/tcc/card-payment/src/grpc"
 	"github.com/bmviniciuss/tcc/card-payment/src/grpc/pb"
@@ -30,16 +31,20 @@ func main() {
 	appPort := os.Getenv("PORT")
 	grpcEnabled := os.Getenv("GRPC_ENABLED")
 
+	paymentRepository := factories.PaymentRepositoryFactory(dbConn)
+	cardApi := factories.NewCardApi()
+	paymentService := factories.NewPaymentService(dbConn, cardApi, paymentRepository)
+
 	if grpcEnabled == "true" {
-		runGrpc(dbConn, appPort)
+		runGrpc(dbConn, appPort, paymentService)
 	} else {
-		runHttp(dbConn, appPort)
+		runHttp(dbConn, appPort, paymentService)
 	}
 }
 
-func runGrpc(db *pgxpool.Pool, appPort string) {
+func runGrpc(db *pgxpool.Pool, appPort string, paymentService payment.Service) {
 	gs := grpc.NewServer()
-	paymentService := factories.NewPaymentService(db)
+
 	pb.RegisterCardPaymentServer(gs, grpcpaymentserver.NewCardPaymentServer(paymentService))
 	reflection.Register(gs)
 
@@ -56,8 +61,7 @@ func runGrpc(db *pgxpool.Pool, appPort string) {
 	}
 }
 
-func runHttp(db *pgxpool.Pool, appPort string) {
-	paymentService := factories.NewPaymentService(db)
+func runHttp(db *pgxpool.Pool, appPort string, paymentService payment.Service) {
 	mux := api.NewApi(paymentService)
 
 	server := http.Server{
