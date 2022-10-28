@@ -77,7 +77,7 @@ export default class BenchmarksInjest extends Command {
         console.log(filePath)
         cp.spawnSync(`GRPC_ENABLED=${GRPC_ENABLED} USE_DB=${USE_DB} docker compose -f ${composePath} up -d`, { stdio: 'inherit', shell: true })
         cp.spawnSync('sleep 5', { stdio: 'inherit', shell: true })
-        cp.spawnSync(`k6 run ${filePath} -e GENERATE_SUMMARY=true -e GRPC_ENABLED=${GRPC_ENABLED} -e OUT_PATH=${outPath}`, { stdio: 'inherit', shell: true })
+        cp.spawnSync(`k6 run ${filePath} -e GENERATE_SUMMARY=true -e GRPC_ENABLED=${GRPC_ENABLED} -e OUT_PATH=${outPath} -e USE_DB=${USE_DB}`, { stdio: 'inherit', shell: true })
         cp.spawnSync('echo', { stdio: 'inherit', shell: true })
         cp.spawnSync('sleep 5', { stdio: 'inherit', shell: true })
         cp.spawnSync(`docker compose -f ${composePath} down -v`, { stdio: 'inherit', shell: true })
