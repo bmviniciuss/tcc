@@ -25,7 +25,8 @@ export default class BenchmarksInjest extends Command {
     rest: Flags.boolean({}),
     createCard: Flags.boolean({}),
     createCardPayment: Flags.boolean({}),
-    useDb: Flags.boolean({})
+    useDb: Flags.boolean({}),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   static args = [
@@ -64,9 +65,11 @@ export default class BenchmarksInjest extends Command {
       throw new Error('Directory already exists')
     })
 
-    console.log({
-      args, flags, values, files, composePath, outPath, USE_DB
-    })
+    if (flags?.verbose) {
+      console.log({
+        args, flags, values, files, composePath, outPath, USE_DB
+      })
+    }
 
     for (const GRPC_ENABLED of values) {
       cp.spawnSync(`docker compose -f ${composePath} down -v`, { stdio: 'inherit', shell: true })
