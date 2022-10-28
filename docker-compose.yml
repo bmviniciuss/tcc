@@ -43,6 +43,7 @@ services:
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - GRPC_ENABLED
+      - USE_DB
       - GOMAXPROCS=8
     networks:
       - base
@@ -70,6 +71,7 @@ services:
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - GRPC_ENABLED
+      - USE_DB
       - GOMAXPROCS=8
     networks:
       - base
