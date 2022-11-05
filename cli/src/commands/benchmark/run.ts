@@ -60,16 +60,16 @@ export default class BenchmarksInjest extends Command {
     const outDate = format(new Date(), 'yyyy-MM-dd-HH-mm-ss')
     const outPath = path.resolve(process.cwd(), args.outPath, outDate)
 
-    await fs.mkdir(outPath).catch(() => {
-      this.log('Directory already exists')
-      throw new Error('Directory already exists')
-    })
-
     if (flags?.verbose) {
       console.log({
         args, flags, values, files, composePath, outPath, USE_DB
       })
     }
+
+    await fs.mkdir(outPath).catch(() => {
+      this.log('Directory already exists')
+      throw new Error('Directory already exists')
+    })
 
     for (const GRPC_ENABLED of values) {
       cp.spawnSync(`docker compose -f ${composePath} down -v`, { stdio: 'inherit', shell: true })
