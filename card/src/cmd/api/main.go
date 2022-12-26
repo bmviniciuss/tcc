@@ -17,6 +17,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -47,6 +48,7 @@ func runGRPC(db *pgxpool.Pool, cardService *card.CardService, paymentService *pa
 	grpcPort := os.Getenv("PORT")
 	grpcServer := grpc.NewServer()
 	pb.RegisterCardsServer(grpcServer, grpccard.NewCardServiceServer(db, cardService, paymentService))
+	reflection.Register(grpcServer)
 	lis, err := net.Listen("tcp", ":"+grpcPort)
 
 	if err != nil {
